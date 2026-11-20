@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "start": "deno run -A backend/server.ts",
+    "dev": "deno run --watch -A backend/server.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "dom"]
+  }
+}
+

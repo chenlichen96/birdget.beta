@@ -1,0 +1,13 @@
+# 臨時檔案與執行檔
+cloudflared.exe
+*.tmp
+*.tmp.*
+
+# 系統隱藏檔
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 編輯器暫存
+.vscode/
+.idea/
