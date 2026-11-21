@@ -10,20 +10,31 @@ if (window.location.protocol === "file:") {
   API_BASE = `http://${window.location.hostname}:8000`;
 }
 
-// Token Storage
+// Token Storage (支援 localStorage 記住登入 與 sessionStorage 單次會話)
 const TOKEN_KEY = "hiyori_auth_token";
 const CURRENT_USER_KEY = "hiyori_current_user";
+const REMEMBER_KEY = "hiyori_remember_login";
 let isOfflineMode = window.location.protocol === "file:";
 
 function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
 }
 
-function setToken(token) {
+function setToken(token, remember = true) {
   if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
+    if (remember) {
+      localStorage.setItem(TOKEN_KEY, token);
+      sessionStorage.removeItem(TOKEN_KEY);
+      localStorage.setItem(REMEMBER_KEY, "true");
+    } else {
+      sessionStorage.setItem(TOKEN_KEY, token);
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REMEMBER_KEY);
+    }
   } else {
     localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REMEMBER_KEY);
   }
 }
 
@@ -42,12 +53,12 @@ function showToast(message, type = "info", duration = 1600) {
   toast.className = `toast toast-${type}`;
 
   const iconMap = {
-    success: "🌿",
-    error: "🌧️",
-    warning: "⚠️",
-    info: "🌸",
+    success: `<svg class="toast-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+    error: `<svg class="toast-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+    warning: `<svg class="toast-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    info: `<svg class="toast-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`,
   };
-  const icon = iconMap[type] || "🌸";
+  const icon = iconMap[type] || iconMap.info;
 
   toast.innerHTML = `<span class="toast-icon">${icon}</span> <span class="toast-msg">${message}</span><span class="toast-close">✕</span>`;
   container.appendChild(toast);
@@ -177,14 +188,14 @@ class LocalFallbackEngine {
   }
 
   // Auth
-  login(username, password) {
+  login(username, password, remember = true) {
     const db = this.getDb();
     const user = db.users.find((u) => u.username.toLowerCase() === username.trim().toLowerCase());
     if (!user || user.password !== password) {
       throw new Error("帳號或密碼錯誤");
     }
     const token = `local_${Date.now()}`;
-    setToken(token);
+    setToken(token, remember);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
     return {
       message: "登入成功 (本機模式)",
@@ -193,7 +204,7 @@ class LocalFallbackEngine {
     };
   }
 
-  register(username, password, displayName) {
+  register(username, password, displayName, remember = true) {
     const db = this.getDb();
     const existing = db.users.find((u) => u.username.toLowerCase() === username.trim().toLowerCase());
     if (existing) {
@@ -210,7 +221,7 @@ class LocalFallbackEngine {
     this.saveDb(db);
 
     const token = `local_${Date.now()}`;
-    setToken(token);
+    setToken(token, remember);
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
     return {
       message: "註冊成功 (本機模式)",
@@ -587,30 +598,30 @@ function handleLocalRoute(endpoint, options) {
 
 // API Methods
 const api = {
-  async register(username, password, displayName) {
+  async register(username, password, displayName, remember = true) {
     const data = await request("/api/auth/register", {
       method: "POST",
       body: JSON.stringify({ username, password, displayName }),
     });
-    if (data.token) setToken(data.token);
+    if (data.token) setToken(data.token, remember);
     return data;
   },
 
-  async login(username, password) {
+  async login(username, password, remember = true) {
     const data = await request("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ username, password }),
     });
-    if (data.token) setToken(data.token);
+    if (data.token) setToken(data.token, remember);
     return data;
   },
 
-  async resetPassword(username, newPassword) {
+  async resetPassword(username, newPassword, remember = true) {
     const data = await request("/api/auth/reset-password", {
       method: "POST",
       body: JSON.stringify({ username, newPassword }),
     });
-    if (data.token) setToken(data.token);
+    if (data.token) setToken(data.token, remember);
     return data;
   },
 

@@ -37,8 +37,15 @@ const charts = {
     if (!data || data.length === 0 || total === 0) {
       container.innerHTML = `
         <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 30px;">
-          <div style="font-size: 2rem; margin-bottom: 6px;">🍃</div>
-          此區間尚無${typeLabel}分類資料
+          <div style="margin-bottom: 8px; display: inline-flex; justify-content: center;">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <div>此區間尚無${typeLabel}分類資料</div>
         </div>
       `;
       legendContainer.innerHTML = "";

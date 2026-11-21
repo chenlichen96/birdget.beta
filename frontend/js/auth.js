@@ -64,6 +64,10 @@ function openAuthModal(mode = "login") {
   const submitBtn = document.getElementById("btn-auth-submit");
   const errAlert = document.getElementById("auth-error-alert");
   const successAlert = document.getElementById("auth-success-alert");
+  const rememberRow = document.getElementById("auth-remember-row");
+
+  // 重置密碼顯示狀態為隱藏 (type="password")
+  resetPasswordVisibility();
 
   errAlert.classList.add("hidden");
   errAlert.textContent = "";
@@ -82,6 +86,7 @@ function openAuthModal(mode = "login") {
     demoBox.classList.add("hidden");
     forgotRow.classList.add("hidden");
     backLoginRow.classList.add("hidden");
+    if (rememberRow) rememberRow.classList.remove("hidden");
     labelUsername.textContent = "使用者帳號 (必填)";
     labelPassword.textContent = "設定密碼 (至少6字元)";
     document.getElementById("auth-password").placeholder = "請輸入密碼 (6至50字元)";
@@ -94,6 +99,7 @@ function openAuthModal(mode = "login") {
     demoBox.classList.add("hidden");
     forgotRow.classList.add("hidden");
     backLoginRow.classList.remove("hidden");
+    if (rememberRow) rememberRow.classList.add("hidden");
     labelUsername.textContent = "請輸入您的帳號";
     labelPassword.textContent = "設定新密碼 (至少6字元)";
     document.getElementById("auth-password").placeholder = "請輸入新密碼 (6至50字元)";
@@ -107,6 +113,7 @@ function openAuthModal(mode = "login") {
     demoBox.classList.remove("hidden");
     forgotRow.classList.remove("hidden");
     backLoginRow.classList.add("hidden");
+    if (rememberRow) rememberRow.classList.remove("hidden");
     labelUsername.textContent = "使用者帳號";
     labelPassword.textContent = "密碼";
     document.getElementById("auth-password").placeholder = "請輸入密碼";
@@ -119,6 +126,57 @@ function openAuthModal(mode = "login") {
 function closeAuthModal() {
   const modal = document.getElementById("modal-auth");
   modal.classList.add("hidden");
+  resetPasswordVisibility();
+}
+
+// 簡約向量眼睛圖標 (SVG)：顯示 vs 隱藏 (帶斜線)
+const SVG_EYE_OPEN = `
+  <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+    <circle cx="12" cy="12" r="3"></circle>
+  </svg>
+`;
+
+const SVG_EYE_CLOSED = `
+  <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+    <line x1="1" y1="1" x2="23" y2="23"></line>
+  </svg>
+`;
+
+// 密碼顯示/隱藏切換輔助函數
+function resetPasswordVisibility() {
+  const pwdInput = document.getElementById("auth-password");
+  const confirmInput = document.getElementById("auth-password-confirm");
+  const btnPwd = document.getElementById("btn-toggle-password");
+  const btnConfirm = document.getElementById("btn-toggle-confirm-password");
+
+  if (pwdInput) pwdInput.type = "password";
+  if (confirmInput) confirmInput.type = "password";
+  if (btnPwd) {
+    btnPwd.innerHTML = SVG_EYE_OPEN;
+    btnPwd.setAttribute("aria-label", "顯示密碼");
+  }
+  if (btnConfirm) {
+    btnConfirm.innerHTML = SVG_EYE_OPEN;
+    btnConfirm.setAttribute("aria-label", "顯示密碼");
+  }
+}
+
+function bindPasswordToggle(btnId, inputId) {
+  const btn = document.getElementById(btnId);
+  const input = document.getElementById(inputId);
+  if (!btn || !input) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isPassword = input.type === "password";
+    input.type = isPassword ? "text" : "password";
+    btn.innerHTML = isPassword ? SVG_EYE_CLOSED : SVG_EYE_OPEN;
+    btn.setAttribute("aria-label", isPassword ? "隱藏密碼" : "顯示密碼");
+    input.focus();
+  });
 }
 
 // Setup Auth Event Handlers
@@ -139,6 +197,10 @@ function setupAuthHandlers() {
 
   btnLoginOpen.addEventListener("click", () => openAuthModal("login"));
   btnCloseModal.addEventListener("click", closeAuthModal);
+
+  // 綁定密碼與確認密碼的眼睛符號切換
+  bindPasswordToggle("btn-toggle-password", "auth-password");
+  bindPasswordToggle("btn-toggle-confirm-password", "auth-password-confirm");
 
   // 大面積彈窗：停用點擊背景遮罩關閉，僅允許右上角 ✕ 按鈕關閉，防止誤觸
   // modal.addEventListener("click", (e) => {
@@ -222,6 +284,9 @@ function setupAuthHandlers() {
       }
     }
 
+    const rememberCheckbox = document.getElementById("auth-remember-me");
+    const rememberMe = rememberCheckbox ? rememberCheckbox.checked : true;
+
     const submitBtn = document.getElementById("btn-auth-submit");
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
@@ -230,13 +295,13 @@ function setupAuthHandlers() {
     try {
       let resp;
       if (currentAuthMode === "register") {
-        resp = await api.register(username, password, displayName);
+        resp = await api.register(username, password, displayName, rememberMe);
         showSuccess(`註冊成功！歡迎加入日和記帳，${resp.user.displayName}`);
       } else if (currentAuthMode === "forgot") {
-        resp = await api.resetPassword(username, password);
+        resp = await api.resetPassword(username, password, rememberMe);
         showSuccess(`密碼重設成功！歡迎回來，${resp.user.displayName}`);
       } else {
-        resp = await api.login(username, password);
+        resp = await api.login(username, password, rememberMe);
         showSuccess(`登入成功！歡迎回來，${resp.user.displayName}`);
       }
 

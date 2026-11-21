@@ -33,14 +33,20 @@
       <div class="header-right">
         <!-- Monthly Budget Mini Badge (Visible when logged in) -->
         <div id="header-budget-badge" class="header-budget-badge hidden" title="點擊設定預算">
-          <span class="budget-icon">🌿</span>
+          <svg class="budget-icon svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
           <span class="budget-text" id="header-budget-text">預算: 計算中</span>
         </div>
 
         <!-- Auth Controls (右上角登入/登出鍵) -->
         <div id="auth-nav" class="auth-nav">
           <button id="btn-login-open" class="btn btn-outline btn-sm">
-            <span class="icon">👤</span> 登入 / 註冊
+            <svg class="svg-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            登入 / 註冊
           </button>
 
           <div id="user-profile-menu" class="user-profile-menu hidden">
@@ -122,7 +128,15 @@
         <!-- Day Record List Container -->
         <div class="day-record-list" id="day-record-list">
           <div class="empty-state">
-            <div class="empty-icon">🍃</div>
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
             <p class="empty-text">本日尚無紀錄，點擊右下角「+」開始記帳</p>
           </div>
         </div>
@@ -133,7 +147,13 @@
   <!-- Pinned Action Controls -->
   <!-- 畫面左下角按鈕：統計報表 (彈窗顯示) -->
   <button id="btn-open-stats" class="fab-bottom-left" title="消費統計報表" aria-label="打開統計報表">
-    <span class="fab-icon">📊</span>
+    <span class="fab-icon">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+    </span>
     <span class="fab-label">統計報表</span>
   </button>
 
@@ -287,7 +307,11 @@
               <span class="budget-limits-text" id="budget-limits-text">本月預算: NT$ 20,000 / 已支出 NT$ 0</span>
             </div>
             <button class="btn btn-ghost btn-sm" id="btn-edit-budget-toggle">
-              ⚙️ 調整預算
+              <svg class="svg-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              調整預算
             </button>
           </div>
 
@@ -303,7 +327,13 @@
 
           <!-- Overspend Alert Banner (Hidden by default, shown when exceeded) -->
           <div class="overspend-alert hidden" id="overspend-alert-box">
-            <span class="alert-icon">⚠️</span>
+            <span class="alert-icon">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </span>
             <span class="alert-msg" id="overspend-alert-msg">超支警告</span>
           </div>
 
@@ -346,10 +376,18 @@
         <div class="stats-charts-section">
           <div class="chart-tabs-header">
             <button class="chart-tab-btn active" data-tab="donut" id="tab-btn-donut">
-              🍩 各分類收支圓餅圖
+              <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+              各分類收支圓餅圖
             </button>
             <button class="chart-tab-btn" data-tab="trend" id="tab-btn-trend">
-              📈 月消費趨勢折線圖
+              <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              月消費趨勢折線圖
             </button>
           </div>
 
@@ -388,7 +426,12 @@
           <div class="table-header-row">
             <h3 class="table-title">收支清單明細 (<span id="stats-record-count">0</span> 筆)</h3>
             <button class="btn btn-outline btn-sm" id="btn-export-csv" title="匯出 CSV 檔">
-              📥 匯出 CSV
+              <svg class="svg-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              匯出 CSV
             </button>
           </div>
           <div class="table-scroll-container">
@@ -463,17 +506,42 @@
           <!-- Password -->
           <div class="form-group" id="group-password">
             <label class="form-label" for="auth-password" id="label-password">密碼</label>
-            <input type="password" id="auth-password" class="form-input" placeholder="請輸入密碼 (至少6個字元)" required
-              autocomplete="current-password" maxlength="50">
+            <div class="password-input-wrapper">
+              <input type="password" id="auth-password" class="form-input" placeholder="請輸入密碼 (至少6個字元)" required
+                autocomplete="current-password" maxlength="50">
+              <button type="button" class="password-toggle-btn" id="btn-toggle-password" aria-label="切換顯示密碼" tabindex="-1">
+                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
             <span class="form-hint" id="hint-password">密碼長度需介於 6 至 50 個字元</span>
           </div>
 
           <!-- Confirm Password (Shown in Register & Reset modes) -->
           <div class="form-group hidden" id="group-confirm-password">
             <label class="form-label" for="auth-password-confirm" id="label-password-confirm">確認密碼</label>
-            <input type="password" id="auth-password-confirm" class="form-input" placeholder="請再次輸入相同的密碼"
-              autocomplete="new-password" maxlength="50">
+            <div class="password-input-wrapper">
+              <input type="password" id="auth-password-confirm" class="form-input" placeholder="請再次輸入相同的密碼"
+                autocomplete="new-password" maxlength="50">
+              <button type="button" class="password-toggle-btn" id="btn-toggle-confirm-password" aria-label="切換顯示密碼" tabindex="-1">
+                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
             <span class="form-hint">確保兩次密碼輸入一致</span>
+          </div>
+
+          <!-- Remember Me Checkbox (Only in Login mode) -->
+          <div class="auth-remember-row" id="auth-remember-row">
+            <label class="checkbox-label" for="auth-remember-me">
+              <input type="checkbox" id="auth-remember-me" checked>
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">記住登入狀態 (關閉視窗後保持登入)</span>
+            </label>
           </div>
 
           <!-- Forgot Password helper link in Login mode -->

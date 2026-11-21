@@ -517,15 +517,37 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 12px;
-  font-size: 1.25rem;
   background-color: var(--color-primary-blue-light);
+  color: var(--color-primary-blue-hover);
+}
+
+.record-cat-icon svg {
+  display: block;
+  stroke: currentColor;
 }
 
 .record-cat-icon.is-income {
   background-color: var(--color-income-light);
+  color: var(--color-income);
+}
+
+/* 統一線性向量小圖示對齊 */
+.svg-icon {
+  display: inline-block;
+  vertical-align: middle;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.btn .svg-icon {
+  margin-right: 5px;
+}
+
+.chart-tab-btn .svg-icon {
+  margin-right: 6px;
 }
 
 .record-item-info {
@@ -1626,6 +1648,87 @@ body {
 .demo-desc {
   font-size: 0.78rem;
   color: var(--text-secondary);
+}
+
+/* 密碼顯示/隱藏切換與包裝 */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 42px; /* 留出右側眼睛按鈕空間 */
+  width: 100%;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: var(--transition);
+  user-select: none;
+}
+
+.password-toggle-btn .eye-icon {
+  display: block;
+  stroke: var(--text-muted);
+  transition: stroke 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background: var(--color-primary-blue-light);
+}
+
+.password-toggle-btn:hover .eye-icon {
+  stroke: var(--color-primary-blue-hover);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+}
+
+/* 記住登入勾選列 */
+.auth-remember-row {
+  display: flex;
+  align-items: center;
+  margin-top: -4px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-blue);
+  cursor: pointer;
+}
+
+.checkbox-text {
+  transition: color 0.15s ease;
+}
+
+.checkbox-label:hover .checkbox-text {
+  color: var(--text-main);
 }
 
 .auth-error-alert {
