@@ -1,9 +1,9 @@
 # 🤖 AI 對話紀錄 — 日和記帳 (Hiyori Book) 開發過程
 
 > **專案名稱**：日和記帳 (Hiyori Book)  
-> **對話期間**：2026-11-13 22:28 ~ 2026-11-16 16:37（台灣時間 UTC+8）  
-> **使用模型**：Gemini 3.8 Flash (High) → Claude Sonnet 4.6 (Thinking) → Claude Opus 4.6 (Thinking)  
-> **對話輪數**：12 輪使用者請求  
+> **對話期間**：2026-11-13 22:28 ~ 2026-11-21 16:01（台灣時間 UTC+8）  
+> **使用模型**：Gemini 3.8 Flash (High/Medium) ⇄ Claude Sonnet 4.6 ⇄ Claude Opus 4.6  
+> **對話輪數**：26 輪使用者請求 (即時同步更新)  
 > **專案路徑**：`c:\Users\user\OneDrive\桌面\vibe coding\HW5\`
 
 ---
@@ -30,6 +30,26 @@
 | 10 | 11/16 15:49 | 註冊介面無法滾動，提示窗口看不到 | 修復 `.modal-auth-card` flex 佈局、`.auth-body` 加入 `overflow-y: auto`、移除內部 `.modal-form` 重複 padding、手機端隱藏 `.form-hint` 節省空間 | style.css, responsive.css |
 | 11 | 11/16 15:57 | 大面積彈窗防誤觸（只能按 ✕ 關閉） | 移除登入/註冊、記帳、統計報表三個彈窗的「點擊背景遮罩關閉」行為 | auth.js, app.js |
 | 12 | 11/16 16:37 | 輸出執行說明和 AI 對話紀錄 md 檔 | 產生本文件與「執行說明.md」 | 執行說明.md, AI對話紀錄.md |
+| 13 | 11/16 18:04 | 手機連不到伺服器，網路都是同一個 | 查明 IP 由 10.98.245.218 變為 10.99.253.56、撰寫防火牆放行腳本 allow_firewall.bat | start.bat, allow_firewall.bat |
+| 14 | 11/16 18:07 | start.bat 打不開 | 修復批次檔中 for 語法與編碼問題，確保黑底視窗穩定啟動 | start.bat |
+| 15 | 11/16 18:12 | 請把 start 的文字內容翻成中文 | start.bat 與後端啟動文字全面中文化 | server.ts, start.bat |
+| 16 | 11/16 18:13 | 批次檔出現語法錯誤與亂碼問題 | 解決 Windows CP950/Big5 編碼衝突，改為乾淨 ASCII 批次檔並由後端輸出 UTF-8 中文 | start.bat |
+| 17 | 11/16 18:15 | 系統完全執行不了 | 加入工作路徑切換 `cd /d "%~dp0"`，新增 start.ps1 替代啟動方案 | start.bat, start.ps1 |
+| 18 | 11/16 18:18 | 手機還是連不到 | 發現切換至 iPhone 熱點 IP 變為 172.20.10.2，更新腳本與說明 | server.ts, start.ps1 |
+| 19 | 11/16 18:21 | 手機端彈窗頂端被遮擋 | 加入 safe-area-inset-top 避讓動態島/瀏海，彈窗高度改為 85~88vh 確保退出鍵可視 | responsive.css |
+| 20 | 11/20 14:40 | 帳號資料都存在哪裡 | 詳細解說 backend/data/db.json 結構（users, records, sessions）與本地快取機制 | （無檔案修改） |
+| 21 | 11/20 14:42 | 在 README 填寫使用技術、資料庫、執行方式 | 完整擴充 README.md 核心三大章節 | README.md |
+| 22 | 11/20 14:47 | 測試並檢查資料隔離，確保 B 無法讀取修改 A | 執行深度隔離測試腳本，驗證防讀取、防修改、防刪除 100% 通過並清理 db.json | （驗證測試） |
+| 23 | 11/20 21:53 | 兩個會員帳號間是否有做私人資料隔離 | 詳細解釋資料庫 userId 綁定、Token 伺服器驗證與 CRUD 雙重鎖定防禦 | （無檔案修改） |
+| 24 | 11/20 22:54 | 能否讓其他地方的朋友看到網站（不同網域） | 說明 Cloudflare Tunnel、Pinggy 穿透與 Deno Deploy 雲端部署三種方法，建立 share.bat | share.bat, .gitignore |
+| 25 | 11/20 22:59 | SSH 穿透被拒與逾時排查 | 修正 Windows 隱藏副檔名造成的 cloudflared.exe.exe 檔名問題，建立一鍵穿透腳本 | share.bat |
+| 26 | 11/20 23:08 | 打包上傳 GitHub 分享給組員 | 提供網頁免安裝拖曳上傳與 Git 指令推送兩種詳細步驟 | （無檔案修改） |
+| 27 | 11/21 00:17 | 不開電腦情況下保持伺服器開啟 | 說明雲端免費代管 (Render.com、Fly.io) 與實體主機方案 | （無檔案修改） |
+| 28 | 11/21 15:13 | Render 部署出現 Dockerfile 找不到錯誤 | 撰寫專屬 Dockerfile 與 .dockerignore，支援雲端 24H 容器化運行 | Dockerfile, .dockerignore |
+| 29 | 11/21 15:44 | 登入密碼顯示切換開關 + 記住登入勾選鍵 | 實作眼睛切換、支援 localStorage（記住）與 sessionStorage（單次安全會話） | index.html, style.css, api.js, auth.js |
+| 30 | 11/21 15:47 | 眼睛切換不要 Emoji，改用簡約圖像 | 替換為極簡細線向量 SVG 圖標 (stroke 2px 眼睛與斜線閉眼) | index.html, style.css, auth.js |
+| 31 | 11/21 15:50 | 全站其他圖示統一風格改為簡約低飽和圖標 | 全面移除鮮豔 Emoji，全站換成 2px 圓角細線和風 SVG（分類、導航、報表按鈕等） | index.html, style.css, app.js, charts.js, api.js |
+| 32 | 11/21 15:55 | 如何更新內容至 GitHub | 提供網頁上傳與 Git 推送詳細步驟 | （無檔案修改） |
 
 ### 關鍵技術決策
 
@@ -352,16 +372,60 @@ AI 進行了全面的程式碼審查與升級：
 
 ---
 
+---
+
+### 第 13 輪至第 19 輪：手機連線除錯與 RWD 頂部避讓優化
+
+- **問題排查**：
+  - 電腦區域網路 IP 隨網路環境由 `10.98.245.218` 變更為 `10.99.253.56`，後續切換至手機熱點又變更為 `172.20.10.2`。
+  - Windows 防火牆預設阻擋對外 8000 埠連線，製作了 `allow_firewall.bat` 一鍵放行。
+  - 批次檔因 Big5 與 UTF-8 編碼衝突導致閃退，重構為穩定 ASCII 腳本並提供 `start.ps1`。
+- **手機彈窗頂部避讓**：
+  - 手機瀏覽器因瀏海與動態島遮擋彈窗標題與退出鍵，在 `responsive.css` 中引入 `env(safe-area-inset-top)`，並將彈窗最高高度控制在 `85vh ~ 88vh`，保留足夠邊距。
+
+---
+
+### 第 20 輪至第 23 輪：資料儲存說明、README 擴充與資料隔離深度檢驗
+
+- **資料庫解說**：
+  - 詳細說明 `backend/data/db.json` 中 `users`、`records`、`sessions` 資料結構與 SHA-256 加鹽雜湊機制。
+- **README 完善**：
+  - 新增技術棧（Deno + TS + Vanilla JS + 原生 SVG）、JSON 原子寫入資料庫與完整啟動測試教學。
+- **資料隔離測試**：
+  - 撰寫 `test_isolation_deep.ts` 驗證會員 B 無法讀取、單筆查看、修改或刪除會員 A 的紀錄，確保多租戶 100% 嚴格隔離。
+
+---
+
+### 第 24 輪至第 28 輪：外部網路穿透、雲端 24H 部署 (Render) 與 GitHub 打包
+
+- **內網穿透工具**：
+  - 提供 Cloudflare Quick Tunnel 方案，排查 Windows 隱藏副檔名導致的 `cloudflared.exe.exe` 命名問題，撰寫 `share.bat` 實現一鍵外網分享。
+- **24H 雲端永續運行**：
+  - 為專案撰寫標準容器化 `Dockerfile` 與 `.dockerignore`，解決 Render 部署時找不到 Dockerfile 的問題，實現電腦關機依然 24 小時在線。
+
+---
+
+### 第 29 輪至第 32 輪：密碼顯示切換、記住登入、極簡向量圖標與 GitHub 更新
+
+- **密碼切換與記住登入**：
+  - 密碼框右側加入眼睛切換開關。
+  - 登入畫面加入「記住登入狀態」勾選列，靈活切換 `localStorage`（長期記住）與 `sessionStorage`（關閉即登出）。
+- **全站圖示極簡風格化**：
+  - 移除 Emoji，全站換裝為統一的 2px 圓角細線和風 SVG（收支分類、導航按鈕、操作功能、空狀態等）。
+- **GitHub 同步指南**：
+  - 提供網頁拖曳上傳與 Git 指令推送兩種同步更新指引。
+
+---
+
 ## 📊 專案統計
 
 | 項目 | 數值 |
 |------|------|
-| 對話輪數 | 12 輪 |
-| 建立/修改檔案數 | 15 個 |
-| 後端程式碼 | ~558 行 (server.ts) + ~250 行 (db.ts) + ~25 行 (auth.ts) + ~80 行 (types.ts) |
-| 前端 HTML | ~500 行 |
-| 前端 CSS | ~1,750 行 (style.css) + ~270 行 (responsive.css) |
-| 前端 JavaScript | ~847 行 (app.js) + ~290 行 (auth.js) + ~180 行 (api.js) + ~160 行 (calendar.js) + ~200 行 (charts.js) |
-| 自動化測試 | 5 大目標、全部通過 |
-| Bug 修復次數 | 6 次 |
-| 使用模型 | Gemini 3.8 Flash → Claude Sonnet 4.6 → Claude Opus 4.6 |
+| 對話輪數 | 32 輪 (持續實時更新) |
+| 建立/修改檔案數 | 18 個 |
+| 後端程式碼 | ~623 行 (server.ts) + ~287 行 (db.ts) + ~25 行 (auth.ts) + ~80 行 (types.ts) |
+| 前端 HTML | ~539 行 |
+| 前端 CSS | ~1,850 行 (style.css) + ~280 行 (responsive.css) |
+| 前端 JavaScript | ~870 行 (app.js) + ~341 行 (auth.js) + ~705 行 (api.js) + ~160 行 (calendar.js) + ~360 行 (charts.js) |
+| 自動化測試 | 5 大目標整合測試 + 多租戶深度隔離測試，全部 100% 通過 |
+| 跨裝置與雲端支援 | 支援區域網路/手機熱點連線、Cloudflare 穿透 (share.bat)、Render 24H 容器部署 (Dockerfile) |
