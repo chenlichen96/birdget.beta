@@ -1,0 +1,812 @@
+{
+  "users": [
+    {
+      "id": "demo-user-id",
+      "username": "demo",
+      "displayName": "小晴 (日和記帳)",
+      "passwordHash": "934ee871a47fd7a25c5955ec0f063017ee4272f71604511ff3004f4ee186923e",
+      "salt": "07fabe9ce9aa436aa1e70c97afb843f4",
+      "budget": {
+        "monthlyLimit": 22000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-13T14:54:26.100Z"
+    },
+    {
+      "id": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "username": "strawberry",
+      "displayName": "草莓慕斯",
+      "passwordHash": "a96ec761b581af9abbf9124894bd054a6c14f510b5918e4581a82bdf0b91aa8d",
+      "salt": "a09f6e852a5d4ea1ab21320262157e2c",
+      "budget": {
+        "monthlyLimit": 10000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T07:33:42.180Z"
+    },
+    {
+      "id": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "username": "cwfhqwowcq",
+      "displayName": "巧克力蛋糕",
+      "passwordHash": "49021081ea81b633afe4941ba91e1b2a7119cc031a2940e70a9c82a3a6f0dc71",
+      "salt": "d6b31b124e334db0bf653567a11e2253",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T07:44:40.319Z"
+    },
+    {
+      "id": "2226eefe-6266-4fb9-9bfc-daf287dbde49",
+      "username": "reset_user_1794824154442",
+      "displayName": "重設密碼測試者",
+      "passwordHash": "26e69555d2531421d9a2a7ff8d8dd561a249b8f823a2bfeb4d3b11cd2730fb7f",
+      "salt": "0dd6edd4bf5e4e939c286f11c8478979",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:15:54.443Z"
+    },
+    {
+      "id": "69ae7529-e97f-4619-9e19-c3c3d1be2f2c",
+      "username": "real_db_1794824154461",
+      "displayName": "真實資料庫用戶",
+      "passwordHash": "54633da2eb6de26ca47ec7baf9390427e343fb2572e849e18f0a2102c553e41e",
+      "salt": "c45d461611a84401b38f4611598f1214",
+      "budget": {
+        "monthlyLimit": 30000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:15:54.461Z"
+    },
+    {
+      "id": "d12fad39-9c17-4986-b5e2-0fc315f585e4",
+      "username": "member_a_1794824154501",
+      "displayName": "會員小雅",
+      "passwordHash": "hashA",
+      "salt": "saltA",
+      "budget": {
+        "monthlyLimit": 15000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:15:54.501Z"
+    },
+    {
+      "id": "accc980b-0b49-4eb0-a1ee-3e1193df2ebc",
+      "username": "member_b_1794824154504",
+      "displayName": "會員大衛",
+      "passwordHash": "hashB",
+      "salt": "saltB",
+      "budget": {
+        "monthlyLimit": 40000,
+        "alertThreshold": 90
+      },
+      "createdAt": "2026-11-16T10:15:54.504Z"
+    },
+    {
+      "id": "c55d8399-89b1-4029-a5bd-f52a1f24e0fc",
+      "username": "reset_user_1794824509108",
+      "displayName": "重設密碼測試者",
+      "passwordHash": "794693381733f34efddadd69936753458d3829baabdfaa599639d7aa9e918b73",
+      "salt": "94868070ed4c463581daf2f3c423a781",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:21:49.108Z"
+    },
+    {
+      "id": "fb9bb2ab-8b51-4a69-a41d-5fb76cc93c2c",
+      "username": "real_db_1794824509126",
+      "displayName": "真實資料庫用戶",
+      "passwordHash": "b197b67878124cf0a200f0f670661e51abaa1a1762e58029c22e19b9c84ec838",
+      "salt": "f61396aee6644083b8834588d59a10d6",
+      "budget": {
+        "monthlyLimit": 30000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:21:49.127Z"
+    },
+    {
+      "id": "0b512e30-ff71-4716-beb6-755f1108ec11",
+      "username": "member_a_1794824509153",
+      "displayName": "會員小雅",
+      "passwordHash": "hashA",
+      "salt": "saltA",
+      "budget": {
+        "monthlyLimit": 15000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-16T10:21:49.153Z"
+    },
+    {
+      "id": "47c624b3-b9e4-4646-848f-93ee41cb7154",
+      "username": "member_b_1794824509155",
+      "displayName": "會員大衛",
+      "passwordHash": "hashB",
+      "salt": "saltB",
+      "budget": {
+        "monthlyLimit": 40000,
+        "alertThreshold": 90
+      },
+      "createdAt": "2026-11-16T10:21:49.155Z"
+    },
+    {
+      "id": "9772c35f-0ffb-4e21-b823-0bfd7466f8f8",
+      "username": "banana",
+      "displayName": "banana",
+      "passwordHash": "ee62727ce2aee6bcbb8fd7f39c72f8bed40b86433f1a11ad725d4f14df909b37",
+      "salt": "d8d739427b604e40900ed1d940569ffc",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-20T07:01:19.531Z"
+    },
+    {
+      "id": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "username": "b223794321@gmail.com",
+      "displayName": "呵呵",
+      "passwordHash": "cbb0089af5d26ec9b3da70c3ca1683b8fbc83ba4b321e9e8d872da025c0bcbc8",
+      "salt": "d0f7ef2f81564eaeb57b036eb0d98ecc",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-20T15:41:14.271Z"
+    }
+  ],
+  "records": [
+    {
+      "id": "94a6226b-c20b-40c8-9181-c5d901463c4b",
+      "userId": "demo-user-id",
+      "type": "income",
+      "amount": 48000,
+      "date": "2026-10-31",
+      "category": "薪水收入",
+      "note": "每月本薪入帳",
+      "account": "銀行轉帳",
+      "createdAt": "2026-10-31T16:00:00.000Z",
+      "updatedAt": "2026-10-31T16:00:00.000Z"
+    },
+    {
+      "id": "79f58926-cc86-4e5a-b518-96b5e4821310",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 12000,
+      "date": "2026-11-01",
+      "category": "居家生活",
+      "note": "房屋租金與管理費",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-01T16:00:00.000Z",
+      "updatedAt": "2026-11-01T16:00:00.000Z"
+    },
+    {
+      "id": "b9cb02fd-553d-4c82-9229-5ae511b6537e",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 160,
+      "date": "2026-11-02",
+      "category": "餐飲飲食",
+      "note": "早餐培根蛋餅與溫豆漿",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-02T16:00:00.000Z",
+      "updatedAt": "2026-11-02T16:00:00.000Z"
+    },
+    {
+      "id": "24714e49-2558-4695-b0dd-d488ae3e9fa6",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-11-02",
+      "category": "日常交通",
+      "note": "雙北都會通定期票",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-02T16:00:00.000Z",
+      "updatedAt": "2026-11-02T16:00:00.000Z"
+    },
+    {
+      "id": "c93b9eb7-fd65-4e47-a29b-6534a972e0bc",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 320,
+      "date": "2026-11-04",
+      "category": "餐飲飲食",
+      "note": "午餐日式豚骨拉麵",
+      "account": "LINE Pay",
+      "createdAt": "2026-11-04T16:00:00.000Z",
+      "updatedAt": "2026-11-04T16:00:00.000Z"
+    },
+    {
+      "id": "78bb8d90-2d0a-42fd-bef9-113d3e0ca4f9",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 560,
+      "date": "2026-11-05",
+      "category": "休閒娛樂",
+      "note": "誠品書店購買書籍《簡單生活》",
+      "account": "信用卡",
+      "createdAt": "2026-11-05T16:00:00.000Z",
+      "updatedAt": "2026-11-05T16:00:00.000Z"
+    },
+    {
+      "id": "0ad7dc94-2af9-444f-a052-fde298406c0a",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 1450,
+      "date": "2026-11-07",
+      "category": "購物消費",
+      "note": "MUJI 無印良品日式收納盒",
+      "account": "信用卡",
+      "createdAt": "2026-11-07T16:00:00.000Z",
+      "updatedAt": "2026-11-07T16:00:00.000Z"
+    },
+    {
+      "id": "fbb87d99-3ae1-438b-a589-cb24e0d14f9a",
+      "userId": "demo-user-id",
+      "type": "income",
+      "amount": 5000,
+      "date": "2026-11-09",
+      "category": "副業收入",
+      "note": "設計稿費入帳",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-09T16:00:00.000Z",
+      "updatedAt": "2026-11-09T16:00:00.000Z"
+    },
+    {
+      "id": "04f8f037-50d7-4b55-b39c-364423162d6f",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 220,
+      "date": "2026-11-09",
+      "category": "餐飲飲食",
+      "note": "全家便利商店 輕食午餐與手沖咖啡",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-09T16:00:00.000Z",
+      "updatedAt": "2026-11-09T16:00:00.000Z"
+    },
+    {
+      "id": "1f5140da-da6e-4c76-80b0-ab307d0585a0",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 880,
+      "date": "2026-11-11",
+      "category": "休閒娛樂",
+      "note": "威秀影城日系動畫電影",
+      "account": "信用卡",
+      "createdAt": "2026-11-11T16:00:00.000Z",
+      "updatedAt": "2026-11-11T16:00:00.000Z"
+    },
+    {
+      "id": "0bb1ac3b-df6c-4055-9077-2d93d614c4bd",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 420,
+      "date": "2026-11-12",
+      "category": "餐飲飲食",
+      "note": "晚餐日式定食套餐",
+      "account": "現金",
+      "createdAt": "2026-11-12T16:00:00.000Z",
+      "updatedAt": "2026-11-12T16:00:00.000Z"
+    },
+    {
+      "id": "8390064c-8b3f-4530-bbae-ffe77b653a40",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 650,
+      "date": "2026-11-14",
+      "category": "醫療健康",
+      "note": "綜合維他命與常備藥品",
+      "account": "信用卡",
+      "createdAt": "2026-11-14T16:00:00.000Z",
+      "updatedAt": "2026-11-14T16:00:00.000Z"
+    },
+    {
+      "id": "131524f4-a977-4443-84d0-1f6974d8f7e9",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 180,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "午後焙茶生乳捲與玄米茶",
+      "account": "LINE Pay",
+      "createdAt": "2026-11-16T16:00:00.000Z",
+      "updatedAt": "2026-11-16T16:00:00.000Z"
+    },
+    {
+      "id": "3b283270-a0c2-4870-a2e9-41a3e913b6a2",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 980,
+      "date": "2026-11-19",
+      "category": "學習成長",
+      "note": "線上日語學習月費",
+      "account": "信用卡",
+      "createdAt": "2026-11-19T16:00:00.000Z",
+      "updatedAt": "2026-11-19T16:00:00.000Z"
+    },
+    {
+      "id": "52e3696b-aab5-4f21-a733-814e707f6c7d",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 450,
+      "date": "2026-11-21",
+      "category": "餐飲飲食",
+      "note": "與朋友居酒屋小酌聚會",
+      "account": "現金",
+      "createdAt": "2026-11-21T16:00:00.000Z",
+      "updatedAt": "2026-11-21T16:00:00.000Z"
+    },
+    {
+      "id": "e24ecdcd-8755-4ef1-981f-ca1ae9797d61",
+      "userId": "demo-user-id",
+      "type": "income",
+      "amount": 48000,
+      "date": "2026-09-30",
+      "category": "薪水收入",
+      "note": "本薪入帳",
+      "account": "銀行轉帳",
+      "createdAt": "2026-09-30T16:00:00.000Z",
+      "updatedAt": "2026-09-30T16:00:00.000Z"
+    },
+    {
+      "id": "896e6848-14ca-465f-8e68-23359d2c7f7f",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 12000,
+      "date": "2026-10-01",
+      "category": "居家生活",
+      "note": "房租",
+      "account": "銀行轉帳",
+      "createdAt": "2026-10-01T16:00:00.000Z",
+      "updatedAt": "2026-10-01T16:00:00.000Z"
+    },
+    {
+      "id": "bddf3f5e-4718-4518-a875-37448cbf96b1",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 3500,
+      "date": "2026-10-07",
+      "category": "餐飲飲食",
+      "note": "上月飲食總結支出",
+      "account": "信用卡",
+      "createdAt": "2026-10-07T16:00:00.000Z",
+      "updatedAt": "2026-10-07T16:00:00.000Z"
+    },
+    {
+      "id": "bd412a3b-bcde-4087-8609-62c6e4425843",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-10-14",
+      "category": "日常交通",
+      "note": "捷運月票",
+      "account": "悠遊卡",
+      "createdAt": "2026-10-14T16:00:00.000Z",
+      "updatedAt": "2026-10-14T16:00:00.000Z"
+    },
+    {
+      "id": "220a1026-427f-4f37-a835-dda4fc65b87b",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 2800,
+      "date": "2026-10-21",
+      "category": "購物消費",
+      "note": "換季衣物購買",
+      "account": "信用卡",
+      "createdAt": "2026-10-21T16:00:00.000Z",
+      "updatedAt": "2026-10-21T16:00:00.000Z"
+    },
+    {
+      "id": "1f065ca9-85ef-4fe7-9515-bd13683c8693",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "type": "expense",
+      "amount": 178,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "好吃香蕉蘋果塔",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:36:23.090Z",
+      "updatedAt": "2026-11-16T07:36:23.090Z"
+    },
+    {
+      "id": "8f5af8f8-f0f5-4e9a-9363-82d739a76c76",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "type": "income",
+      "amount": 6000,
+      "date": "2026-11-01",
+      "category": "薪水收入",
+      "note": "零用錢",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:37:08.562Z",
+      "updatedAt": "2026-11-16T07:37:08.562Z"
+    },
+    {
+      "id": "55a86b41-7c68-4535-9775-7b2ef3c20ca2",
+      "userId": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "type": "expense",
+      "amount": 20,
+      "date": "2026-11-16",
+      "category": "日常交通",
+      "note": "",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:45:20.119Z",
+      "updatedAt": "2026-11-16T07:45:20.119Z"
+    },
+    {
+      "id": "c364ec32-96e5-4ad1-8312-42206679ddda",
+      "userId": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "type": "income",
+      "amount": 200,
+      "date": "2026-11-16",
+      "category": "獎金紅利",
+      "note": "發票中獎",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:45:37.044Z",
+      "updatedAt": "2026-11-16T07:45:37.045Z"
+    },
+    {
+      "id": "f93566d5-fbf8-46fb-9fc8-ac9c60103f47",
+      "userId": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "type": "income",
+      "amount": 35000,
+      "date": "2026-11-04",
+      "category": "薪水收入",
+      "note": "",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:46:33.603Z",
+      "updatedAt": "2026-11-16T07:46:33.603Z"
+    },
+    {
+      "id": "d354c397-dc26-46d4-ad1a-20d82cd075af",
+      "userId": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "type": "expense",
+      "amount": 111,
+      "date": "2026-11-10",
+      "category": "餐飲飲食",
+      "note": "",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:46:40.699Z",
+      "updatedAt": "2026-11-16T07:46:40.699Z"
+    },
+    {
+      "id": "109535f8-1185-4889-b32c-e8a85eecc272",
+      "userId": "21ba7b36-ab85-4afd-8670-a565f986e84d",
+      "type": "expense",
+      "amount": 200,
+      "date": "2026-11-02",
+      "category": "醫療健康",
+      "note": "感冒",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:47:38.582Z",
+      "updatedAt": "2026-11-16T07:47:38.582Z"
+    },
+    {
+      "id": "26f617eb-7a3f-472e-875e-2fdc440f176e",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "type": "income",
+      "amount": 1000,
+      "date": "2026-11-04",
+      "category": "獎金紅利",
+      "note": "刮刮樂中獎",
+      "account": "現金",
+      "createdAt": "2026-11-16T07:52:42.539Z",
+      "updatedAt": "2026-11-16T07:52:42.539Z"
+    },
+    {
+      "id": "eeb4e644-8230-4022-888a-96e248fb5a77",
+      "userId": "69ae7529-e97f-4619-9e19-c3c3d1be2f2c",
+      "type": "expense",
+      "amount": 180,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "豚骨拉麵",
+      "account": "現金",
+      "createdAt": "2026-11-16T10:15:54.465Z",
+      "updatedAt": "2026-11-16T10:15:54.465Z"
+    },
+    {
+      "id": "8b87bb7e-5646-4036-a908-e29ab42ee37f",
+      "userId": "69ae7529-e97f-4619-9e19-c3c3d1be2f2c",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-11-16",
+      "category": "日常交通",
+      "note": "捷運定期票",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-16T10:15:54.467Z",
+      "updatedAt": "2026-11-16T10:15:54.467Z"
+    },
+    {
+      "id": "b9b46657-3c4b-4f3f-ac65-5827f6fe716c",
+      "userId": "69ae7529-e97f-4619-9e19-c3c3d1be2f2c",
+      "type": "income",
+      "amount": 50000,
+      "date": "2026-11-01",
+      "category": "薪水收入",
+      "note": "本月薪資",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-16T10:15:54.469Z",
+      "updatedAt": "2026-11-16T10:15:54.469Z"
+    },
+    {
+      "id": "42371153-4a26-41ce-b827-07172bbec0ca",
+      "userId": "d12fad39-9c17-4986-b5e2-0fc315f585e4",
+      "type": "expense",
+      "amount": 990,
+      "date": "2026-11-15",
+      "category": "購物消費",
+      "note": "小雅的私人物品",
+      "account": "信用卡",
+      "createdAt": "2026-11-16T10:15:54.507Z",
+      "updatedAt": "2026-11-16T10:15:54.507Z"
+    },
+    {
+      "id": "9f9fb542-bd25-433e-90f2-9c4a23f10631",
+      "userId": "d12fad39-9c17-4986-b5e2-0fc315f585e4",
+      "type": "income",
+      "amount": 32000,
+      "date": "2026-11-10",
+      "category": "薪水收入",
+      "note": "小雅的薪水",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-16T10:15:54.510Z",
+      "updatedAt": "2026-11-16T10:15:54.510Z"
+    },
+    {
+      "id": "24916a16-39bc-4912-b8e9-29d249e9a5b8",
+      "userId": "accc980b-0b49-4eb0-a1ee-3e1193df2ebc",
+      "type": "expense",
+      "amount": 5500,
+      "date": "2026-11-16",
+      "category": "休閒娛樂",
+      "note": "大衛的露營裝備",
+      "account": "信用卡",
+      "createdAt": "2026-11-16T10:15:54.514Z",
+      "updatedAt": "2026-11-16T10:15:54.514Z"
+    },
+    {
+      "id": "db41a71e-dabe-45d4-8fab-0326edcbf2c1",
+      "userId": "fb9bb2ab-8b51-4a69-a41d-5fb76cc93c2c",
+      "type": "expense",
+      "amount": 180,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "豚骨拉麵",
+      "account": "現金",
+      "createdAt": "2026-11-16T10:21:49.129Z",
+      "updatedAt": "2026-11-16T10:21:49.129Z"
+    },
+    {
+      "id": "051ce359-96d3-4eca-84ec-7870c4ee3701",
+      "userId": "fb9bb2ab-8b51-4a69-a41d-5fb76cc93c2c",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-11-16",
+      "category": "日常交通",
+      "note": "捷運定期票",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-16T10:21:49.131Z",
+      "updatedAt": "2026-11-16T10:21:49.132Z"
+    },
+    {
+      "id": "875368d9-8b57-4ff2-b512-c7b12dff468d",
+      "userId": "fb9bb2ab-8b51-4a69-a41d-5fb76cc93c2c",
+      "type": "income",
+      "amount": 50000,
+      "date": "2026-11-01",
+      "category": "薪水收入",
+      "note": "本月薪資",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-16T10:21:49.137Z",
+      "updatedAt": "2026-11-16T10:21:49.137Z"
+    },
+    {
+      "id": "d28d20a3-cb00-447d-9b1b-a6e0624fe0cf",
+      "userId": "0b512e30-ff71-4716-beb6-755f1108ec11",
+      "type": "expense",
+      "amount": 990,
+      "date": "2026-11-15",
+      "category": "購物消費",
+      "note": "小雅的私人物品",
+      "account": "信用卡",
+      "createdAt": "2026-11-16T10:21:49.157Z",
+      "updatedAt": "2026-11-16T10:21:49.157Z"
+    },
+    {
+      "id": "ba497562-d4fc-413f-814e-082b34bb1a8e",
+      "userId": "0b512e30-ff71-4716-beb6-755f1108ec11",
+      "type": "income",
+      "amount": 32000,
+      "date": "2026-11-10",
+      "category": "薪水收入",
+      "note": "小雅的薪水",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-16T10:21:49.158Z",
+      "updatedAt": "2026-11-16T10:21:49.158Z"
+    },
+    {
+      "id": "c0bc8b74-e223-4944-833b-72c74e7aff70",
+      "userId": "47c624b3-b9e4-4646-848f-93ee41cb7154",
+      "type": "expense",
+      "amount": 5500,
+      "date": "2026-11-16",
+      "category": "休閒娛樂",
+      "note": "大衛的露營裝備",
+      "account": "信用卡",
+      "createdAt": "2026-11-16T10:21:49.160Z",
+      "updatedAt": "2026-11-16T10:21:49.160Z"
+    },
+    {
+      "id": "8fee2211-3025-4e87-b0da-793553d83be5",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "type": "expense",
+      "amount": 111,
+      "date": "2026-11-20",
+      "category": "餐飲飲食",
+      "note": "蛋白盒子",
+      "account": "現金",
+      "createdAt": "2026-11-20T06:36:53.928Z",
+      "updatedAt": "2026-11-20T06:59:44.217Z"
+    },
+    {
+      "id": "8876a86b-fb28-433e-a7d3-353e95f165aa",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "type": "expense",
+      "amount": 380,
+      "date": "2026-11-21",
+      "category": "休閒娛樂",
+      "note": "看電影",
+      "account": "現金",
+      "createdAt": "2026-11-20T06:37:13.158Z",
+      "updatedAt": "2026-11-20T06:37:13.158Z"
+    },
+    {
+      "id": "a1c560cb-f0b6-4541-a0aa-a573f5b1bc19",
+      "userId": "9772c35f-0ffb-4e21-b823-0bfd7466f8f8",
+      "type": "expense",
+      "amount": 10,
+      "date": "2026-12-03",
+      "category": "日常交通",
+      "note": "",
+      "account": "現金",
+      "createdAt": "2026-11-20T07:03:40.825Z",
+      "updatedAt": "2026-11-20T07:03:40.825Z"
+    },
+    {
+      "id": "deae220e-b129-48fa-aed9-505bdc998d54",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 501,
+      "date": "2026-11-20",
+      "category": "餐飲飲食",
+      "note": "",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:38:46.228Z",
+      "updatedAt": "2026-11-20T15:57:50.789Z"
+    },
+    {
+      "id": "f6b82f8c-0af3-4aa7-9b34-e4a19e9a9f7b",
+      "userId": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "type": "expense",
+      "amount": 720,
+      "date": "2026-11-20",
+      "category": "休閒娛樂",
+      "note": "電影票",
+      "account": "信用卡",
+      "createdAt": "2026-11-20T15:42:00.810Z",
+      "updatedAt": "2026-11-20T15:42:00.810Z"
+    },
+    {
+      "id": "548ac97c-57cb-4bcf-a77a-2c313e65e359",
+      "userId": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "type": "expense",
+      "amount": 110,
+      "date": "2026-11-20",
+      "category": "餐飲飲食",
+      "note": "義大利麵",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:42:23.494Z",
+      "updatedAt": "2026-11-20T15:42:23.494Z"
+    },
+    {
+      "id": "427c8c38-c458-46fd-858a-021ac42c495c",
+      "userId": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "type": "expense",
+      "amount": 85,
+      "date": "2026-11-20",
+      "category": "餐飲飲食",
+      "note": "學餐",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:42:44.054Z",
+      "updatedAt": "2026-11-20T15:42:44.054Z"
+    },
+    {
+      "id": "041a03fb-234a-492f-b738-2b5e0bcce9e2",
+      "userId": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "type": "expense",
+      "amount": 35,
+      "date": "2026-11-20",
+      "category": "餐飲飲食",
+      "note": "早餐飲料",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:43:06.435Z",
+      "updatedAt": "2026-11-20T15:43:06.435Z"
+    },
+    {
+      "id": "c2bb0c6d-2970-4993-96ad-dec7a91b7f28",
+      "userId": "demo-user-id",
+      "type": "expense",
+      "amount": 1000,
+      "date": "2026-11-20",
+      "category": "其他支出",
+      "note": "給親戚小孩的紅包錢",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:54:49.793Z",
+      "updatedAt": "2026-11-20T15:56:02.419Z"
+    },
+    {
+      "id": "b7e44a2f-cf70-4077-a287-38b5acf4b2af",
+      "userId": "demo-user-id",
+      "type": "income",
+      "amount": 2000,
+      "date": "2026-11-21",
+      "category": "獎金紅利",
+      "note": "發票中獎啦",
+      "account": "現金",
+      "createdAt": "2026-11-20T15:55:07.897Z",
+      "updatedAt": "2026-11-20T15:56:23.975Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "hy_bc4b903cb8c4c8cd8f9658867d9af148089fa1db187f63e49adc3aa57f8f59b2",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "createdAt": "2026-11-16T07:33:42.185Z",
+      "expiresAt": "2026-12-16T07:33:42.185Z"
+    },
+    {
+      "token": "token_relogin_1794824154496",
+      "userId": "69ae7529-e97f-4619-9e19-c3c3d1be2f2c",
+      "createdAt": "2026-11-16T10:15:54.496Z",
+      "expiresAt": "2026-12-16T10:15:54.496Z"
+    },
+    {
+      "token": "hy_19d1cf75c25c6bfa3411790468137c3497dec0931754e0e58539ef1b318794f8",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "createdAt": "2026-11-16T10:20:15.093Z",
+      "expiresAt": "2026-12-16T10:20:15.092Z"
+    },
+    {
+      "token": "token_relogin_1794824509152",
+      "userId": "fb9bb2ab-8b51-4a69-a41d-5fb76cc93c2c",
+      "createdAt": "2026-11-16T10:21:49.152Z",
+      "expiresAt": "2026-12-16T10:21:49.152Z"
+    },
+    {
+      "token": "hy_210eb94f3983c7c62e5c5ca4b3a4d332494c3ff5b2a912ecef73ead0561f7d10",
+      "userId": "b81bf23a-0691-475a-b62e-02e5301ccadc",
+      "createdAt": "2026-11-20T13:57:09.552Z",
+      "expiresAt": "2026-12-20T13:57:09.552Z"
+    },
+    {
+      "token": "hy_c227577d27cf918c67c02a5892ce114cdefeb613b53a2d419763d349afa235ba",
+      "userId": "demo-user-id",
+      "createdAt": "2026-11-20T15:38:35.445Z",
+      "expiresAt": "2026-12-20T15:38:35.445Z"
+    },
+    {
+      "token": "hy_3c1aa17654e2e0509072a0ba33a7fb0cf89e29df8eef5169d41c2608bb9a8eb5",
+      "userId": "6aff3a46-26ad-4610-a371-03a80324d094",
+      "createdAt": "2026-11-20T15:41:14.279Z",
+      "expiresAt": "2026-12-20T15:41:14.279Z"
+    },
+    {
+      "token": "hy_95bd7ae44ce6572b2ab90f0c21e23919e0f2487ba27956d0b838b3940157e848",
+      "userId": "demo-user-id",
+      "createdAt": "2026-11-20T15:43:15.257Z",
+      "expiresAt": "2026-12-20T15:43:15.257Z"
+    }
+  ]
+}

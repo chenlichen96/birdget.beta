@@ -1,0 +1,285 @@
+/* ==========================================================
+   日和記帳 - 響應式裝置配適 (Responsive Web Design - RWD)
+   支援手機 (Mobile)、平板 (Tablet)、桌面 (Desktop)
+   ========================================================== */
+
+/* 手機裝置 (Mobile: < 640px) */
+@media screen and (max-width: 640px) {
+  .app-header {
+    height: 56px;
+  }
+
+  .header-inner {
+    padding: 0 14px;
+  }
+
+  .brand-title {
+    font-size: 1.02rem;
+  }
+
+  .brand-sub {
+    display: none;
+  }
+
+  .header-budget-badge {
+    display: none; /* 手機版簡化頂部，保留在報表彈窗 */
+  }
+
+  .user-name {
+    display: none; /* 手機版僅顯示頭像與登出 */
+  }
+
+  .main-container {
+    padding: 12px 10px 110px 10px;
+    gap: 14px;
+  }
+
+  .calendar-fixed-wrapper {
+    top: 62px;
+  }
+
+  .calendar-card {
+    padding: 12px 10px 10px 10px;
+  }
+
+  .cal-current-month {
+    font-size: 1rem;
+  }
+
+  .cal-day-cell {
+    height: 38px;
+    border-radius: 8px;
+  }
+
+  .cal-day-num {
+    font-size: 0.82rem;
+  }
+
+  .cal-indicators {
+    bottom: 2px;
+    gap: 2px;
+  }
+
+  .dot {
+    width: 4px;
+    height: 4px;
+  }
+
+  .calendar-legend {
+    font-size: 0.7rem;
+    gap: 10px;
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  /* 選取日收支 */
+  .day-details-card {
+    padding: 14px 12px;
+  }
+
+  .date-tag {
+    font-size: 1.05rem;
+  }
+
+  .day-summary-pills {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+  }
+
+  .pill {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* 浮動按鈕：手機版觸控友善 */
+  .fab-bottom-right {
+    bottom: 20px;
+    right: 18px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .fab-plus {
+    font-size: 1.9rem;
+  }
+
+  .fab-bottom-left {
+    bottom: 20px;
+    left: 18px;
+    padding: 10px 16px;
+    font-size: 0.88rem;
+  }
+
+  /* 彈窗樣式：手機版化身為底部抽屜 (Bottom Sheet) */
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 20px); /* 避開頂部相機挖孔與狀態列 */
+  }
+
+  .modal-card {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 30px); /* 動態高度扣除頂部空間 */
+    max-height: calc(88vh - 20px); /* 兜底 fallback */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-top: auto;
+    animation: modalSlideUpMobile 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+
+  @keyframes modalSlideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    padding: 14px 18px;
+  }
+
+  .modal-form {
+    padding: 16px 18px;
+    gap: 14px;
+  }
+
+  .form-input, .form-select {
+    font-size: 16px; /* 防止 iOS Safari 點擊輸入框時自動放大頁面 */
+  }
+
+  /* 登入/註冊彈窗：手機版縮小間距、允許捲動 */
+  .modal-auth-card {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 30px);
+    max-height: 85vh; /* 兜底 fallback，留出足夠安全邊距防止頂端被瀏覽器頂部條或瀏海擋住 */
+  }
+
+  .auth-body {
+    padding: 14px 18px;
+    gap: 10px; /* 縮小欄位間距，讓更多內容可見 */
+  }
+
+  /* auth-body 內的 form 在 responsive.css 也清零 padding */
+  .auth-body .modal-form {
+    padding: 0;
+  }
+
+  /* 手機端隱藏密碼提示文字以節省空間 */
+  .form-hint {
+    display: none;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 160px;
+  }
+
+  /* 統計報表手機適配 */
+  .modal-stats-card {
+    height: auto;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 30px);
+    max-height: 88vh;
+  }
+
+  .stats-body {
+    padding: 14px 16px;
+    gap: 16px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .kpi-card {
+    padding: 10px 14px;
+  }
+
+  .kpi-val {
+    font-size: 1.2rem;
+  }
+
+  .donut-chart-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .donut-chart-container {
+    min-height: 180px;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .filter-row-secondary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .budget-form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .budget-input-field input {
+    width: 100%;
+  }
+
+  /* 表格在手機端滾動 */
+  .table-scroll-container {
+    max-height: 200px;
+  }
+
+  /* 手機端 Toast 優化：置中膠囊、縮小、不擋畫面，點擊即消 */
+  .toast-container {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .toast {
+    min-width: unset;
+    width: auto;
+    max-width: 92%;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 16px rgba(45, 52, 64, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+/* 平板裝置 (Tablet: 641px ~ 1024px) */
+@media screen and (min-width: 641px) and (max-width: 1024px) {
+  .main-container {
+    max-width: 680px;
+    padding: 20px 20px 110px 20px;
+  }
+
+  .modal-stats-card {
+    max-width: 680px;
+  }
+
+  .donut-chart-layout {
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+/* 針對支援觸控但有較大螢幕的裝置優化 */
+@media (hover: none) {
+  .fab-bottom-right:hover {
+    transform: none;
+  }
+  .fab-bottom-left:hover {
+    transform: none;
+  }
+}
+

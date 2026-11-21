@@ -1,0 +1,849 @@
+// ==========================================================
+// 日和記帳 (Hiyori Book) - 主應用程式控制邏輯
+// ==========================================================
+
+// 分類定義 (日系和風圖示)
+const CATEGORIES = {
+  expense: [
+    { name: "餐飲飲食", icon: "🍱" },
+    { name: "日常交通", icon: "🚌" },
+    { name: "居家生活", icon: "🏠" },
+    { name: "休閒娛樂", icon: "🍵" },
+    { name: "購物消費", icon: "🛍️" },
+    { name: "醫療健康", icon: "💊" },
+    { name: "學習成長", icon: "📚" },
+    { name: "其他支出", icon: "🍃" },
+  ],
+  income: [
+    { name: "薪水收入", icon: "💼" },
+    { name: "獎金紅利", icon: "🧧" },
+    { name: "投資理財", icon: "📈" },
+    { name: "副業收入", icon: "✨" },
+    { name: "其他收入", icon: "🌸" },
+  ],
+};
+
+const WEEKDAYS = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+let calendar = null;
+let currentRecordType = "expense";
+let selectedCategory = "餐飲飲食";
+let selectedAccount = "現金";
+let currentStatsData = null;
+let donutChartCurrentType = "expense";
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize Calendar
+  calendar = new CalendarComponent();
+  calendar.render();
+
+  // Initialize Auth
+  initAuth();
+
+  // Listen for date change on calendar
+  calendar.onDateSelected((dateStr) => {
+    updateSelectedDateUI(dateStr);
+    loadDayRecords(dateStr);
+  });
+
+  // Listen for auth state change
+  onAuthChanged((user) => {
+    updateBudgetBadge();
+    if (user) {
+      calendar.fetchRecordMarkers();
+      loadDayRecords(calendar.getSelectedDateString());
+    } else {
+      calendar.fetchRecordMarkers();
+      renderDayRecords([]);
+    }
+  });
+
+  // Setup UI components and handlers
+  setupRecordModalHandlers();
+  setupStatsModalHandlers();
+  setupBudgetHeaderHandler();
+
+  // Initial load
+  const initialDate = calendar.getSelectedDateString();
+  updateSelectedDateUI(initialDate);
+});
+
+// Update the Date badge under calendar
+function updateSelectedDateUI(dateStr) {
+  const badgeDate = document.getElementById("selected-date-badge");
+  const badgeWeekday = document.getElementById("selected-weekday-badge");
+
+  badgeDate.textContent = dateStr;
+  const parts = dateStr.split("-");
+  if (parts.length === 3) {
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    badgeWeekday.textContent = WEEKDAYS[d.getDay()] || "";
+  }
+}
+
+// Load records for the specific selected date
+async function loadDayRecords(dateStr) {
+  if (!currentUser) {
+    renderDayRecords([]);
+    return;
+  }
+
+  try {
+    const res = await api.getRecords({ date: dateStr });
+    renderDayRecords(res.records || []);
+  } catch (err) {
+    console.error("Failed to load records for date:", err);
+    renderDayRecords([]);
+  }
+}
+
+// Render records into the day-details card
+function renderDayRecords(records) {
+  const container = document.getElementById("day-record-list");
+  const expenseTotalPill = document.getElementById("day-expense-total");
+  const incomeTotalPill = document.getElementById("day-income-total");
+
+  let totalExpense = 0;
+  let totalIncome = 0;
+
+  records.forEach((r) => {
+    if (r.type === "expense") totalExpense += r.amount;
+    else totalIncome += r.amount;
+  });
+
+  expenseTotalPill.textContent = `支出: NT$ ${totalExpense.toLocaleString()}`;
+  incomeTotalPill.textContent = `收入: NT$ ${totalIncome.toLocaleString()}`;
+
+  if (!records || records.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🍃</div>
+        <p class="empty-text">本日尚無紀錄，點擊右下角「+」開始記帳</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = "";
+  records.forEach((record) => {
+    const isIncome = record.type === "income";
+    const sign = isIncome ? "+" : "-";
+    const amountClass = isIncome ? "income" : "expense";
+
+    // Find category icon
+    const catList = isIncome ? CATEGORIES.income : CATEGORIES.expense;
+    const catObj = catList.find((c) => c.name === record.category);
+    const catIcon = catObj ? catObj.icon : isIncome ? "🌸" : "🍵";
+
+    const card = document.createElement("div");
+    card.className = "record-item-card";
+    card.innerHTML = `
+      <div class="record-item-left">
+        <span class="record-cat-icon ${isIncome ? "is-income" : ""}">${catIcon}</span>
+        <div class="record-item-info">
+          <span class="record-item-title">${escapeHtml(record.note || record.category)}</span>
+          <div class="record-item-meta">
+            <span class="record-category-badge">${escapeHtml(record.category)}</span>
+            <span>${escapeHtml(record.account || "現金")}</span>
+          </div>
+        </div>
+      </div>
+      <div class="record-item-right">
+        <span class="record-item-amount ${amountClass}">${sign}NT$ ${record.amount.toLocaleString()}</span>
+        <div class="record-actions">
+          <button class="btn-icon-action edit-btn" title="編輯此筆紀錄" aria-label="編輯">
+            ✏️
+          </button>
+          <button class="btn-icon-action delete delete-btn" title="刪除此筆紀錄" aria-label="刪除">
+            🗑️
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Edit handler
+    card.querySelector(".edit-btn").addEventListener("click", () => {
+      openRecordModalForEdit(record);
+    });
+
+    // Delete handler
+    card.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (confirm(`確定要刪除這筆「${record.note || record.category}」NT$ ${record.amount} 的紀錄嗎？`)) {
+        try {
+          await api.deleteRecord(record.id);
+          showToast("已刪除該筆紀錄", "info");
+          loadDayRecords(calendar.getSelectedDateString());
+          calendar.fetchRecordMarkers();
+          updateBudgetBadge();
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+// ==================== 記帳區域彈窗 (+ 號，畫面右下角) ====================
+function setupRecordModalHandlers() {
+  const btnOpenRecord = document.getElementById("btn-open-record");
+  const modal = document.getElementById("modal-record");
+  const btnClose = document.getElementById("btn-close-record-modal");
+  const form = document.getElementById("record-form");
+  const segExpense = document.getElementById("seg-expense");
+  const segIncome = document.getElementById("seg-income");
+  const customCatInput = document.getElementById("custom-cat-input");
+  const quickAmtBtns = document.querySelectorAll(".quick-amt-btn");
+
+  // Open Record Modal
+  btnOpenRecord.addEventListener("click", () => {
+    if (!currentUser) {
+      showToast("請先登入後開始記帳", "warning");
+      openAuthModal("login");
+      return;
+    }
+    openRecordModalForCreate();
+  });
+
+  btnClose.addEventListener("click", closeRecordModal);
+  // 大面積彈窗：停用點擊背景遮罩關閉，僅允許右上角 ✕ 按鈕關閉，防止誤觸
+  // modal.addEventListener("click", (e) => {
+  //   if (e.target === modal) closeRecordModal();
+  // });
+
+  // Switch Expense / Income
+  segExpense.addEventListener("click", () => {
+    setRecordType("expense");
+  });
+  segIncome.addEventListener("click", () => {
+    setRecordType("income");
+  });
+
+  // Quick Amount Buttons (+50, +100, etc.)
+  quickAmtBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const amtInput = document.getElementById("record-amount");
+      const addVal = Number(btn.dataset.amt);
+      const currentVal = Number(amtInput.value) || 0;
+      amtInput.value = currentVal + addVal;
+    });
+  });
+
+  // Custom Category Input
+  customCatInput.addEventListener("input", (e) => {
+    if (e.target.value.trim()) {
+      selectedCategory = e.target.value.trim();
+      document.getElementById("current-cat-display").textContent = selectedCategory;
+      // unselect pills
+      document.querySelectorAll(".category-pill-btn").forEach((p) => p.classList.remove("active"));
+    }
+  });
+
+  // Payment Account Pills
+  const accPills = document.querySelectorAll(".acc-pill");
+  accPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      accPills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      selectedAccount = pill.dataset.acc;
+    });
+  });
+
+  // Form Submit (Create or Update)
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const recordId = document.getElementById("record-id-input").value;
+    const amount = Number(document.getElementById("record-amount").value);
+    const date = document.getElementById("record-date").value;
+    const note = document.getElementById("record-note").value.trim();
+
+    if (!amount || amount <= 0) {
+      showToast("請輸入大於 0 的有效金額", "warning");
+      return;
+    }
+    if (!date) {
+      showToast("請選擇日期", "warning");
+      return;
+    }
+    if (!selectedCategory) {
+      showToast("請選擇分類", "warning");
+      return;
+    }
+
+    const payload = {
+      type: currentRecordType,
+      amount,
+      date,
+      category: selectedCategory,
+      note,
+      account: selectedAccount,
+    };
+
+    const submitBtn = document.getElementById("btn-save-record");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "儲存中...";
+
+    try {
+      let resp;
+      if (recordId) {
+        resp = await api.updateRecord(recordId, payload);
+        showToast("紀錄更新成功", "success");
+      } else {
+        resp = await api.createRecord(payload);
+        showToast("記帳成功！", "success");
+
+        // Overspend Alert check
+        if (resp.overspendWarning) {
+          setTimeout(() => {
+            showToast(resp.overspendWarning, "warning", 2600);
+          }, 400);
+        }
+      }
+
+      closeRecordModal();
+
+      // Refresh calendar & day details
+      calendar.setSelectedDate(date);
+      await calendar.fetchRecordMarkers();
+      await loadDayRecords(date);
+      await updateBudgetBadge();
+    } catch (err) {
+      showToast(err.message || "儲存失敗", "error");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "確認儲存";
+    }
+  });
+}
+
+function openRecordModalForCreate() {
+  const modal = document.getElementById("modal-record");
+  document.getElementById("record-modal-title").textContent = "記一筆日常";
+  document.getElementById("record-id-input").value = "";
+  document.getElementById("record-amount").value = "";
+  document.getElementById("record-note").value = "";
+  document.getElementById("custom-cat-input").value = "";
+
+  // Set date to current calendar selection
+  document.getElementById("record-date").value = calendar.getSelectedDateString();
+
+  setRecordType("expense");
+  modal.classList.remove("hidden");
+  setTimeout(() => document.getElementById("record-amount").focus(), 100);
+}
+
+function openRecordModalForEdit(record) {
+  const modal = document.getElementById("modal-record");
+  document.getElementById("record-modal-title").textContent = "修改紀錄";
+  document.getElementById("record-id-input").value = record.id;
+  document.getElementById("record-amount").value = record.amount;
+  document.getElementById("record-date").value = record.date;
+  document.getElementById("record-note").value = record.note || "";
+  document.getElementById("custom-cat-input").value = "";
+
+  setRecordType(record.type, record.category);
+
+  // Set account pill
+  selectedAccount = record.account || "現金";
+  document.querySelectorAll(".acc-pill").forEach((pill) => {
+    if (pill.dataset.acc === selectedAccount) pill.classList.add("active");
+    else pill.classList.remove("active");
+  });
+
+  modal.classList.remove("hidden");
+}
+
+function closeRecordModal() {
+  document.getElementById("modal-record").classList.add("hidden");
+}
+
+function setRecordType(type, initialCategory = null) {
+  currentRecordType = type;
+  const segExpense = document.getElementById("seg-expense");
+  const segIncome = document.getElementById("seg-income");
+
+  if (type === "expense") {
+    segExpense.classList.add("active");
+    segIncome.classList.remove("active");
+  } else {
+    segIncome.classList.add("active");
+    segExpense.classList.remove("active");
+  }
+
+  // Populate categories
+  const catList = CATEGORIES[type] || [];
+  const grid = document.getElementById("category-selector-grid");
+  grid.innerHTML = "";
+
+  selectedCategory = initialCategory || catList[0]?.name || "其他";
+  document.getElementById("current-cat-display").textContent = selectedCategory;
+
+  let matchedPill = false;
+  catList.forEach((cat) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "category-pill-btn";
+    if (cat.name === selectedCategory) {
+      btn.classList.add("active");
+      matchedPill = true;
+    }
+
+    btn.innerHTML = `
+      <span class="cat-btn-icon">${cat.icon}</span>
+      <span class="cat-btn-text">${cat.name}</span>
+    `;
+
+    btn.addEventListener("click", () => {
+      grid.querySelectorAll(".category-pill-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedCategory = cat.name;
+      document.getElementById("current-cat-display").textContent = cat.name;
+      document.getElementById("custom-cat-input").value = "";
+    });
+
+    grid.appendChild(btn);
+  });
+
+  if (!matchedPill && initialCategory) {
+    document.getElementById("custom-cat-input").value = initialCategory;
+  }
+}
+
+// ==================== 消費統計報表彈窗 (畫面左下角按鈕) ====================
+function setupStatsModalHandlers() {
+  const btnOpenStats = document.getElementById("btn-open-stats");
+  const modal = document.getElementById("modal-stats");
+  const btnClose = document.getElementById("btn-close-stats-modal");
+
+  btnOpenStats.addEventListener("click", () => {
+    if (!currentUser) {
+      showToast("請先登入後查看統計報表", "warning");
+      openAuthModal("login");
+      return;
+    }
+    openStatsModal();
+  });
+
+  btnClose.addEventListener("click", () => modal.classList.add("hidden"));
+  // 大面積彈窗：停用點擊背景遮罩關閉，僅允許右上角 ✕ 按鈕關閉，防止誤觸
+  // modal.addEventListener("click", (e) => {
+  //   if (e.target === modal) modal.classList.add("hidden");
+  // });
+
+  // Chart Tab switching (Donut vs Line Trend)
+  const tabBtnDonut = document.getElementById("tab-btn-donut");
+  const tabBtnTrend = document.getElementById("tab-btn-trend");
+  const paneDonut = document.getElementById("pane-donut");
+  const paneTrend = document.getElementById("pane-trend");
+
+  tabBtnDonut.addEventListener("click", () => {
+    tabBtnDonut.classList.add("active");
+    tabBtnTrend.classList.remove("active");
+    paneDonut.classList.add("active");
+    paneTrend.classList.remove("active");
+  });
+
+  tabBtnTrend.addEventListener("click", () => {
+    tabBtnTrend.classList.add("active");
+    tabBtnDonut.classList.remove("active");
+    paneTrend.classList.add("active");
+    paneDonut.classList.remove("active");
+    if (currentStatsData) {
+      charts.renderMonthlyLineChart("trend-chart-container", currentStatsData.monthlyTrends);
+    }
+  });
+
+  // Donut chart type toggle (Expense vs Income breakdown)
+  const donutExpBtn = document.getElementById("donut-type-expense");
+  const donutIncBtn = document.getElementById("donut-type-income");
+
+  donutExpBtn.addEventListener("click", () => {
+    donutExpBtn.classList.add("active");
+    donutIncBtn.classList.remove("active");
+    donutChartCurrentType = "expense";
+    renderDonutFromCurrentData();
+  });
+
+  donutIncBtn.addEventListener("click", () => {
+    donutIncBtn.classList.add("active");
+    donutExpBtn.classList.remove("active");
+    donutChartCurrentType = "income";
+    renderDonutFromCurrentData();
+  });
+
+  // Period Filter Pills (本月, 上月, 近30天, 今年)
+  const periodPills = document.querySelectorAll("#stats-period-filters .filter-pill");
+  periodPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      periodPills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      loadStatsReport();
+    });
+  });
+
+  // Secondary Filters (Type, Category, Keyword)
+  document.getElementById("stats-type-select").addEventListener("change", filterStatsTable);
+  document.getElementById("stats-category-select").addEventListener("change", filterStatsTable);
+  document.getElementById("stats-keyword-input").addEventListener("input", filterStatsTable);
+
+  // Budget Adjust toggle drawer
+  const btnToggleBudget = document.getElementById("btn-edit-budget-toggle");
+  const drawer = document.getElementById("budget-setting-drawer");
+  const btnCancelBudget = document.getElementById("btn-cancel-budget-edit");
+  const budgetForm = document.getElementById("budget-setting-form");
+
+  btnToggleBudget.addEventListener("click", () => {
+    drawer.classList.toggle("hidden");
+    if (!drawer.classList.contains("hidden")) {
+      const curLimit = currentUser?.budget?.monthlyLimit || 20000;
+      const curThresh = currentUser?.budget?.alertThreshold || 80;
+      document.getElementById("budget-limit-input").value = curLimit;
+      document.getElementById("budget-threshold-input").value = curThresh;
+    }
+  });
+
+  btnCancelBudget.addEventListener("click", () => drawer.classList.add("hidden"));
+
+  budgetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const limit = Number(document.getElementById("budget-limit-input").value);
+    const threshold = Number(document.getElementById("budget-threshold-input").value);
+
+    try {
+      const resp = await api.updateBudget(limit, threshold);
+      if (currentUser) {
+        currentUser.budget = resp.budget;
+      }
+      showToast("預算設定已更新", "success");
+      drawer.classList.add("hidden");
+      loadStatsReport();
+      updateBudgetBadge();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
+
+  // Export CSV
+  document.getElementById("btn-export-csv").addEventListener("click", exportRecordsToCSV);
+}
+
+async function openStatsModal() {
+  const modal = document.getElementById("modal-stats");
+  modal.classList.remove("hidden");
+  await loadStatsReport();
+}
+
+async function loadStatsReport() {
+  const activePeriodBtn = document.querySelector("#stats-period-filters .filter-pill.active");
+  const period = activePeriodBtn?.dataset?.period || "this-month";
+
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth(); // 0-based
+
+  let startDate, endDate, monthParam;
+
+  if (period === "this-month") {
+    const curMStr = String(m + 1).padStart(2, "0");
+    monthParam = `${y}-${curMStr}`;
+    startDate = `${y}-${curMStr}-01`;
+    endDate = `${y}-${curMStr}-31`;
+  } else if (period === "last-month") {
+    const prevM = m === 0 ? 11 : m - 1;
+    const prevY = m === 0 ? y - 1 : y;
+    const prevMStr = String(prevM + 1).padStart(2, "0");
+    monthParam = `${prevY}-${prevMStr}`;
+    startDate = `${prevY}-${prevMStr}-01`;
+    endDate = `${prevY}-${prevMStr}-31`;
+  } else if (period === "recent-30") {
+    const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    startDate = d30.toISOString().slice(0, 10);
+    endDate = now.toISOString().slice(0, 10);
+  } else if (period === "all-year") {
+    startDate = `${y}-01-01`;
+    endDate = `${y}-12-31`;
+  }
+
+  try {
+    const data = await api.getStats({ month: monthParam, startDate, endDate });
+    currentStatsData = data;
+
+    // Render KPIs
+    document.getElementById("stats-total-expense").textContent = `NT$ ${data.totalExpense.toLocaleString()}`;
+    document.getElementById("stats-total-income").textContent = `NT$ ${data.totalIncome.toLocaleString()}`;
+    const balanceSign = data.balance >= 0 ? "+" : "-";
+    document.getElementById("stats-net-balance").textContent = `${balanceSign}NT$ ${Math.abs(data.balance).toLocaleString()}`;
+
+    // Render Budget & Overspend Alert
+    renderBudgetCard(data.budget);
+
+    // Populate Category select options
+    populateCategoryFilterOptions(data.categoryBreakdown);
+
+    // Render Donut Chart
+    renderDonutFromCurrentData();
+
+    // Render Monthly Line Chart
+    charts.renderMonthlyLineChart("trend-chart-container", data.monthlyTrends);
+
+    // Fetch and render Table records
+    const recordsResp = await api.getRecords({ startDate, endDate });
+    window._cachedStatsRecords = recordsResp.records || [];
+    filterStatsTable();
+  } catch (err) {
+    console.error("Failed to load stats:", err);
+    showToast("載入報表失敗: " + err.message, "error");
+  }
+}
+
+function renderBudgetCard(budget) {
+  const budgetCard = document.getElementById("budget-card");
+  const statusPill = document.getElementById("budget-status-pill");
+  const limitsText = document.getElementById("budget-limits-text");
+  const progressBar = document.getElementById("budget-progress-bar");
+  const percentText = document.getElementById("budget-percent-text");
+  const remainText = document.getElementById("budget-remain-text");
+  const alertBox = document.getElementById("overspend-alert-box");
+  const alertMsg = document.getElementById("overspend-alert-msg");
+
+  budgetCard.classList.remove("is-warning", "is-over");
+  alertBox.classList.add("hidden");
+
+  const limit = budget.monthlyLimit || 0;
+  const spent = budget.spent || 0;
+  const pct = budget.percentage || 0;
+
+  limitsText.textContent = `本月預算: NT$ ${limit.toLocaleString()} / 已支出 NT$ ${spent.toLocaleString()}`;
+  percentText.textContent = `已使用 ${pct}%`;
+  progressBar.style.width = `${Math.min(100, pct)}%`;
+
+  if (limit <= 0) {
+    statusPill.textContent = "未設定上限";
+    remainText.textContent = "尚未設定預算上限";
+    return;
+  }
+
+  if (budget.isOverBudget) {
+    budgetCard.classList.add("is-over");
+    statusPill.textContent = "已超支";
+    remainText.textContent = `已超支 NT$ ${(budget.overAmount || spent - limit).toLocaleString()}`;
+    alertBox.classList.remove("hidden");
+    alertMsg.textContent = `注意：本月支出累計 NT$ ${spent.toLocaleString()}，已超出預算 NT$ ${(spent - limit).toLocaleString()} (${pct}%)！`;
+  } else if (budget.isNearBudget) {
+    budgetCard.classList.add("is-warning");
+    statusPill.textContent = "接近預算上限";
+    remainText.textContent = `剩餘 NT$ ${(budget.remaining).toLocaleString()}`;
+    alertBox.classList.remove("hidden");
+    alertMsg.textContent = `提示：本月支出已達預算 ${pct}%，剩餘可支配金額 NT$ ${budget.remaining.toLocaleString()}`;
+  } else {
+    statusPill.textContent = "掌控良好";
+    remainText.textContent = `剩餘 NT$ ${budget.remaining.toLocaleString()}`;
+  }
+}
+
+function renderDonutFromCurrentData() {
+  if (!currentStatsData) return;
+  const filtered = currentStatsData.categoryBreakdown.filter((c) => c.type === donutChartCurrentType);
+  charts.renderDonutChart(
+    "donut-chart-container",
+    "donut-legend-container",
+    filtered,
+    donutChartCurrentType === "expense" ? "支出" : "收入"
+  );
+}
+
+function populateCategoryFilterOptions(breakdown) {
+  const select = document.getElementById("stats-category-select");
+  const curVal = select.value;
+  select.innerHTML = '<option value="all">全部分類</option>';
+
+  const uniqueCats = Array.from(new Set(breakdown.map((b) => b.category)));
+  uniqueCats.forEach((cat) => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
+  });
+
+  if (uniqueCats.includes(curVal)) {
+    select.value = curVal;
+  }
+}
+
+function filterStatsTable() {
+  const records = window._cachedStatsRecords || [];
+  const typeFilter = document.getElementById("stats-type-select").value;
+  const categoryFilter = document.getElementById("stats-category-select").value;
+  const keyword = document.getElementById("stats-keyword-input").value.trim().toLowerCase();
+
+  let filtered = records;
+  if (typeFilter !== "all") {
+    filtered = filtered.filter((r) => r.type === typeFilter);
+  }
+  if (categoryFilter !== "all") {
+    filtered = filtered.filter((r) => r.category === categoryFilter);
+  }
+  if (keyword) {
+    filtered = filtered.filter(
+      (r) =>
+        r.note.toLowerCase().includes(keyword) ||
+        r.category.toLowerCase().includes(keyword) ||
+        (r.account && r.account.toLowerCase().includes(keyword))
+    );
+  }
+
+  renderStatsTable(filtered);
+}
+
+function renderStatsTable(records) {
+  const tbody = document.getElementById("stats-table-body");
+  const countSpan = document.getElementById("stats-record-count");
+  countSpan.textContent = records.length;
+
+  if (records.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center" style="padding: 24px; color: var(--text-muted);">
+          🍃 沒有符合條件的紀錄
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = "";
+  records.forEach((r) => {
+    const tr = document.createElement("tr");
+    const isIncome = r.type === "income";
+    const typeLabel = isIncome ? "收入" : "支出";
+    const typeClass = isIncome ? "pill-income" : "pill-expense";
+    const sign = isIncome ? "+" : "-";
+
+    tr.innerHTML = `
+      <td>${r.date}</td>
+      <td><span class="pill ${typeClass}">${typeLabel}</span></td>
+      <td><strong>${escapeHtml(r.category)}</strong></td>
+      <td>${escapeHtml(r.note || "-")}</td>
+      <td>${escapeHtml(r.account || "現金")}</td>
+      <td class="text-right" style="font-weight: 700; color: var(${isIncome ? "--color-income" : "--color-expense"});">
+        ${sign}NT$ ${r.amount.toLocaleString()}
+      </td>
+      <td class="text-center">
+        <button class="btn-icon-action edit-btn" title="編輯">✏️</button>
+        <button class="btn-icon-action delete delete-btn" title="刪除">🗑️</button>
+      </td>
+    `;
+
+    tr.querySelector(".edit-btn").addEventListener("click", () => {
+      document.getElementById("modal-stats").classList.add("hidden");
+      openRecordModalForEdit(r);
+    });
+
+    tr.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (confirm(`確定刪除「${r.note || r.category}」NT$ ${r.amount} 嗎？`)) {
+        try {
+          await api.deleteRecord(r.id);
+          showToast("已刪除紀錄", "info");
+          loadStatsReport();
+          calendar.fetchRecordMarkers();
+          loadDayRecords(calendar.getSelectedDateString());
+          updateBudgetBadge();
+        } catch (err) {
+          showToast(err.message, "error");
+        }
+      }
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function exportRecordsToCSV() {
+  const records = window._cachedStatsRecords || [];
+  if (records.length === 0) {
+    showToast("目前沒有可匯出的紀錄", "warning");
+    return;
+  }
+
+  let csv = "\uFEFF日期,類型,分類,項目說明,支付方式,金額\n";
+  records.forEach((r) => {
+    const typeText = r.type === "income" ? "收入" : "支出";
+    const noteSafe = (r.note || "").replace(/"/g, '""');
+    csv += `"${r.date}","${typeText}","${r.category}","${noteSafe}","${r.account || "現金"}",${r.amount}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `日和記帳明細_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("已匯出 CSV 檔", "success");
+}
+
+// ==================== 頂部預算 Mini 標籤 ====================
+function setupBudgetHeaderHandler() {
+  const badge = document.getElementById("header-budget-badge");
+  badge.addEventListener("click", () => {
+    openStatsModal();
+    // open drawer
+    setTimeout(() => {
+      const drawer = document.getElementById("budget-setting-drawer");
+      drawer.classList.remove("hidden");
+    }, 200);
+  });
+}
+
+async function updateBudgetBadge() {
+  const badge = document.getElementById("header-budget-badge");
+  const text = document.getElementById("header-budget-text");
+
+  if (!currentUser) {
+    badge.classList.add("hidden");
+    return;
+  }
+
+  try {
+    const data = await api.getBudget();
+    badge.classList.remove("hidden");
+
+    if (data.budget.monthlyLimit > 0) {
+      if (data.isOverBudget) {
+        text.textContent = `超支 NT$ ${data.overAmount.toLocaleString()} (${data.percentage}%)`;
+        badge.style.background = "var(--color-expense-light)";
+        badge.style.color = "var(--color-expense)";
+      } else if (data.isNearBudget) {
+        text.textContent = `預算已用 ${data.percentage}%`;
+        badge.style.background = "var(--color-warning-light)";
+        badge.style.color = "var(--color-warning)";
+      } else {
+        text.textContent = `剩餘 NT$ ${data.remaining.toLocaleString()}`;
+        badge.style.background = "var(--color-primary-blue-light)";
+        badge.style.color = "var(--color-primary-blue-hover)";
+      }
+    } else {
+      text.textContent = `本月支出 NT$ ${data.spent.toLocaleString()}`;
+      badge.style.background = "var(--color-purple-gray-light)";
+      badge.style.color = "var(--color-purple-gray)";
+    }
+  } catch {
+    badge.classList.add("hidden");
+  }
+}
+
+// Security Helper
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
