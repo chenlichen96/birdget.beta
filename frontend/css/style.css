@@ -2137,3 +2137,103 @@ body {
   display: none !important;
 }
 
+/* 圖表放大按鈕（僅手機顯示） */
+.btn-chart-zoom {
+  display: none; /* 預設隱藏，僅手機端顯示 */
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.btn-chart-zoom:hover {
+  background: var(--color-purple-gray-light);
+  color: var(--text-main);
+}
+
+/* Chart Lightbox Modal */
+.modal-chart-lightbox {
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.chart-lightbox-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(45, 52, 64, 0.22);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: lightbox-in 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes lightbox-in {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.chart-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--color-purple-gray-light);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-secondary);
+  z-index: 10;
+  transition: var(--transition);
+}
+.chart-lightbox-close:hover {
+  background: var(--border-color);
+}
+
+.chart-lightbox-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 14px 50px 0 18px;
+}
+
+.chart-lightbox-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chart-lightbox-body svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 260px !important;
+}
+
+.chart-lightbox-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 200px;
+}
+

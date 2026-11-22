@@ -444,6 +444,9 @@
                 <button class="chart-toggle-pill active" id="donut-type-expense">支出分類</button>
                 <button class="chart-toggle-pill" id="donut-type-income">收入分類</button>
               </div>
+              <button type="button" class="btn-chart-zoom mobile-only" id="btn-zoom-donut" aria-label="放大圓餅圖">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
             </div>
             <div class="donut-chart-layout">
               <div class="donut-chart-container" id="donut-chart-container">
@@ -467,6 +470,9 @@
           <div class="chart-tab-pane" id="pane-trend">
             <div class="chart-sub-controls">
               <span class="chart-caption">近六個月收支走勢圖</span>
+              <button type="button" class="btn-chart-zoom mobile-only" id="btn-zoom-trend" aria-label="放大折線圖">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
             </div>
             <div class="trend-chart-container" id="trend-chart-container">
               <!-- SVG Line Chart rendered here -->
@@ -737,6 +743,17 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- Chart Lightbox (mobile tap-to-zoom) -->
+  <div id="modal-chart-lightbox" class="modal-overlay modal-chart-lightbox" style="display:none;" role="dialog" aria-modal="true">
+    <div class="chart-lightbox-card">
+      <button type="button" class="chart-lightbox-close" id="btn-lightbox-close" aria-label="關閉放大圖表">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="chart-lightbox-title" id="lightbox-title"></div>
+      <div class="chart-lightbox-body" id="lightbox-chart-body"></div>
     </div>
   </div>
 

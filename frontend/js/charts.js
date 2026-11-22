@@ -363,3 +363,71 @@ const charts = {
   },
 };
 
+/* ============================================================
+ * Chart Lightbox — 點擊放大圖表（手機端）
+ * ============================================================ */
+(function initChartLightbox() {
+  const overlay   = document.getElementById('modal-chart-lightbox');
+  const closeBtn  = document.getElementById('btn-lightbox-close');
+  const titleEl   = document.getElementById('lightbox-title');
+  const bodyEl    = document.getElementById('lightbox-chart-body');
+  const zoomDonut = document.getElementById('btn-zoom-donut');
+  const zoomTrend = document.getElementById('btn-zoom-trend');
+
+  if (!overlay || !closeBtn || !bodyEl) return;
+
+  function openLightbox(sourceId, title) {
+    const src = document.getElementById(sourceId);
+    if (!src) return;
+
+    // Clone 整個來源容器內容（SVG + legend）
+    bodyEl.innerHTML = '';
+    titleEl.textContent = title;
+
+    const svgEl = src.querySelector('svg');
+    if (svgEl) {
+      const clonedSvg = svgEl.cloneNode(true);
+      // 讓 clone SVG 自適應寬度
+      clonedSvg.removeAttribute('width');
+      clonedSvg.removeAttribute('height');
+      clonedSvg.style.width  = '100%';
+      clonedSvg.style.height = 'auto';
+      clonedSvg.style.maxHeight = '300px';
+      bodyEl.appendChild(clonedSvg);
+    }
+
+    // 若是圓餅圖，同時 clone 圖例
+    if (sourceId === 'donut-chart-container') {
+      const legendSrc = document.getElementById('donut-legend-container');
+      if (legendSrc) {
+        const legendWrap = document.createElement('div');
+        legendWrap.className = 'chart-lightbox-legend';
+        legendWrap.innerHTML = legendSrc.innerHTML;
+        bodyEl.appendChild(legendWrap);
+      }
+    }
+
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    bodyEl.innerHTML = '';
+  }
+
+  if (zoomDonut) {
+    zoomDonut.addEventListener('click', () => openLightbox('donut-chart-container', '收支分類比例'));
+  }
+  if (zoomTrend) {
+    zoomTrend.addEventListener('click', () => openLightbox('trend-chart-container', '近六個月收支走勢圖'));
+  }
+
+  closeBtn.addEventListener('click', closeLightbox);
+  // 點擊背景關閉
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  // ESC 關閉
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display !== 'none') closeLightbox(); });
+})();
+
