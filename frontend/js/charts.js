@@ -364,70 +364,304 @@ const charts = {
 };
 
 /* ============================================================
- * Chart Lightbox — 點擊放大圖表（手機端）
+ * Chart Lightbox — 支援雙指縮放 (Pinch-to-zoom)、拖曳平移與工具列
  * ============================================================ */
 (function initChartLightbox() {
-  const overlay   = document.getElementById('modal-chart-lightbox');
-  const closeBtn  = document.getElementById('btn-lightbox-close');
-  const titleEl   = document.getElementById('lightbox-title');
-  const bodyEl    = document.getElementById('lightbox-chart-body');
-  const zoomDonut = document.getElementById('btn-zoom-donut');
-  const zoomTrend = document.getElementById('btn-zoom-trend');
+  let currentScale = 1.0;
+  let panX = 0;
+  let panY = 0;
 
-  if (!overlay || !closeBtn || !bodyEl) return;
+  // Touch 手勢狀態
+  let initialTouchDist = null;
+  let startScale = 1.0;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let lastTapTime = 0;
+
+  // 滑鼠拖曳狀態
+  let isMouseDragging = false;
+  let mouseStartX = 0;
+  let mouseStartY = 0;
+
+  function getElements() {
+    return {
+      overlay: document.getElementById('modal-chart-lightbox'),
+      closeBtn: document.getElementById('btn-lightbox-close'),
+      titleEl: document.getElementById('lightbox-title'),
+      viewport: document.getElementById('chart-zoom-viewport'),
+      content: document.getElementById('chart-zoom-content'),
+      legendArea: document.getElementById('chart-lightbox-legend-area'),
+      zoomBadge: document.getElementById('lightbox-zoom-badge'),
+      btnZoomIn: document.getElementById('btn-zoom-in'),
+      btnZoomOut: document.getElementById('btn-zoom-out'),
+      btnZoomReset: document.getElementById('btn-zoom-reset'),
+      zoomDonut: document.getElementById('btn-zoom-donut'),
+      zoomTrend: document.getElementById('btn-zoom-trend'),
+      donutContainer: document.getElementById('donut-chart-container'),
+      trendContainer: document.getElementById('trend-chart-container'),
+    };
+  }
+
+  function updateTransform(withTransition = false) {
+    const { content, zoomBadge } = getElements();
+    if (!content) return;
+
+    if (withTransition) {
+      content.style.transition = 'transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1)';
+    } else {
+      content.style.transition = 'none';
+    }
+
+    content.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
+
+    if (zoomBadge) {
+      zoomBadge.textContent = `${Math.round(currentScale * 100)}%`;
+    }
+  }
+
+  function setScale(newScale, withTransition = true) {
+    currentScale = Math.min(Math.max(newScale, 0.8), 4.0);
+    if (currentScale <= 1.0) {
+      panX = 0;
+      panY = 0;
+    }
+    updateTransform(withTransition);
+  }
+
+  function resetZoom() {
+    currentScale = 1.0;
+    panX = 0;
+    panY = 0;
+    updateTransform(true);
+  }
 
   function openLightbox(sourceId, title) {
+    const { overlay, titleEl, content, legendArea } = getElements();
+    if (!overlay || !content || !titleEl) return;
+
     const src = document.getElementById(sourceId);
     if (!src) return;
 
-    // Clone 整個來源容器內容（SVG + legend）
-    bodyEl.innerHTML = '';
+    content.innerHTML = '';
+    if (legendArea) legendArea.innerHTML = '';
     titleEl.textContent = title;
+
+    const isTrend = sourceId === 'trend-chart-container';
+    if (isTrend) {
+      content.classList.add('is-trend');
+    } else {
+      content.classList.remove('is-trend');
+    }
 
     const svgEl = src.querySelector('svg');
     if (svgEl) {
       const clonedSvg = svgEl.cloneNode(true);
-      // 讓 clone SVG 自適應寬度
       clonedSvg.removeAttribute('width');
       clonedSvg.removeAttribute('height');
-      clonedSvg.style.width  = '100%';
+      clonedSvg.style.width = '100%';
       clonedSvg.style.height = 'auto';
-      clonedSvg.style.maxHeight = '300px';
-      bodyEl.appendChild(clonedSvg);
+
+      if (!isTrend) {
+        clonedSvg.style.maxWidth = '280px';
+        clonedSvg.style.maxHeight = '280px';
+      }
+
+      content.appendChild(clonedSvg);
+    } else {
+      content.innerHTML = '<div style="padding: 30px; color: var(--text-muted); font-size: 0.88rem; text-align: center;">尚無圖表數據可放大顯示</div>';
     }
 
-    // 若是圓餅圖，同時 clone 圖例
-    if (sourceId === 'donut-chart-container') {
+    // 若是圓餅圖，同時在下方獨立區域放入圖例
+    if (sourceId === 'donut-chart-container' && legendArea) {
       const legendSrc = document.getElementById('donut-legend-container');
-      if (legendSrc) {
+      if (legendSrc && legendSrc.children.length > 0) {
         const legendWrap = document.createElement('div');
         legendWrap.className = 'chart-lightbox-legend';
         legendWrap.innerHTML = legendSrc.innerHTML;
-        bodyEl.appendChild(legendWrap);
+        legendArea.appendChild(legendWrap);
       }
     }
 
-    overlay.style.display = 'flex';
+    resetZoom();
+    overlay.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
 
   function closeLightbox() {
-    overlay.style.display = 'none';
+    const { overlay, content, legendArea } = getElements();
+    if (!overlay) return;
+    overlay.classList.add('hidden');
     document.body.style.overflow = '';
-    bodyEl.innerHTML = '';
+    if (content) content.innerHTML = '';
+    if (legendArea) legendArea.innerHTML = '';
+    resetZoom();
   }
 
-  if (zoomDonut) {
-    zoomDonut.addEventListener('click', () => openLightbox('donut-chart-container', '收支分類比例'));
-  }
-  if (zoomTrend) {
-    zoomTrend.addEventListener('click', () => openLightbox('trend-chart-container', '近六個月收支走勢圖'));
+  function bindEvents() {
+    const {
+      overlay, closeBtn, viewport,
+      btnZoomIn, btnZoomOut, btnZoomReset,
+      zoomDonut, zoomTrend, donutContainer, trendContainer
+    } = getElements();
+
+    if (!overlay || !viewport) return;
+
+    // 1. 工具列縮放按鈕
+    if (btnZoomIn) {
+      btnZoomIn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setScale(currentScale + 0.3, true);
+      });
+    }
+    if (btnZoomOut) {
+      btnZoomOut.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setScale(currentScale - 0.3, true);
+      });
+    }
+    if (btnZoomReset) {
+      btnZoomReset.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resetZoom();
+      });
+    }
+
+    // 2. 觸控手勢：雙指縮放 (Pinch-to-zoom) & 單指拖曳平移 (Pan) & 雙擊放大
+    viewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        // 雙指開始捏合
+        initialTouchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        startScale = currentScale;
+      } else if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX - panX;
+        touchStartY = e.touches[0].clientY - panY;
+
+        // 雙擊判斷 (Double-tap to zoom or reset)
+        const now = Date.now();
+        if (now - lastTapTime < 320) {
+          if (currentScale > 1.2) {
+            resetZoom();
+          } else {
+            currentScale = 2.0;
+            updateTransform(true);
+          }
+          lastTapTime = 0;
+        } else {
+          lastTapTime = now;
+        }
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2 && initialTouchDist) {
+        // 雙指縮放中
+        e.preventDefault();
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = currentDist / initialTouchDist;
+        currentScale = Math.min(Math.max(startScale * factor, 0.8), 4.0);
+        updateTransform(false);
+      } else if (e.touches.length === 1 && currentScale > 1.0) {
+        // 放大狀態下單指平移
+        e.preventDefault();
+        panX = e.touches[0].clientX - touchStartX;
+        panY = e.touches[0].clientY - touchStartY;
+        updateTransform(false);
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        initialTouchDist = null;
+      }
+      if (currentScale < 1.0) {
+        resetZoom();
+      }
+    });
+
+    // 3. 滑鼠滾輪縮放 (Mouse Wheel Zoom)
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.2 : -0.2;
+      setScale(currentScale + delta, true);
+    }, { passive: false });
+
+    // 4. 滑鼠拖曳平移 (Mouse Drag Pan)
+    viewport.addEventListener('mousedown', (e) => {
+      if (currentScale > 1.0) {
+        isMouseDragging = true;
+        mouseStartX = e.clientX - panX;
+        mouseStartY = e.clientY - panY;
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isMouseDragging && currentScale > 1.0) {
+        panX = e.clientX - mouseStartX;
+        panY = e.clientY - mouseStartY;
+        updateTransform(false);
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      isMouseDragging = false;
+    });
+
+    // 5. 觸發開啟 Lightbox
+    if (zoomDonut) {
+      zoomDonut.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox('donut-chart-container', '收支分類比例');
+      });
+    }
+    if (donutContainer) {
+      donutContainer.addEventListener('click', () => {
+        openLightbox('donut-chart-container', '收支分類比例');
+      });
+    }
+
+    if (zoomTrend) {
+      zoomTrend.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox('trend-chart-container', '近六個月收支走勢圖');
+      });
+    }
+    if (trendContainer) {
+      trendContainer.addEventListener('click', () => {
+        openLightbox('trend-chart-container', '近六個月收支走勢圖');
+      });
+    }
+
+    // 6. 關閉操作
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeLightbox();
+      });
+    }
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
+        closeLightbox();
+      }
+    });
   }
 
-  closeBtn.addEventListener('click', closeLightbox);
-  // 點擊背景關閉
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
-  // ESC 關閉
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display !== 'none') closeLightbox(); });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindEvents);
+  } else {
+    bindEvents();
+  }
 })();
 

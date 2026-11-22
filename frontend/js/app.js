@@ -305,21 +305,72 @@ function setupRecordModalHandlers() {
       const addVal = Number(btn.dataset.amt);
       const currentVal = Number(amtInput.value) || 0;
       const nextVal = currentVal + addVal;
-      if (String(nextVal).length <= 8) {
+      if (String(nextVal).length <= 8 && nextVal <= 99999999) {
         amtInput.value = nextVal;
       } else {
         amtInput.value = 99999999;
+        showToast("金額已達 8 位數上限 (99,999,999)", "warning", 1800);
+        amtInput.classList.add("input-limit-shake");
+        setTimeout(() => amtInput.classList.remove("input-limit-shake"), 400);
       }
     });
   });
 
-  // Limit amount input to 8 characters max
-  const recordAmtInput = document.getElementById("record-amount");
-  recordAmtInput.addEventListener("input", () => {
-    if (recordAmtInput.value.length > 8) {
-      recordAmtInput.value = recordAmtInput.value.slice(0, 8);
-    }
-  });
+  // 統一輸入框字數上限提示與視覺反饋
+  function setupInputLimitFeedback(inputTarget, maxLen, labelName) {
+    const el = typeof inputTarget === "string" ? document.getElementById(inputTarget) : inputTarget;
+    if (!el) return;
+
+    let lastToastTime = 0;
+    const triggerLimitToast = (customMsg) => {
+      const now = Date.now();
+      if (now - lastToastTime > 1200) {
+        showToast(customMsg || `${labelName}已達 ${maxLen} 字上限`, "warning", 1800);
+        lastToastTime = now;
+        el.classList.add("input-limit-shake");
+        setTimeout(() => el.classList.remove("input-limit-shake"), 400);
+      }
+    };
+
+    // 1. 攔截即將超過上限的按鍵輸入 (keydown)
+    el.addEventListener("keydown", (e) => {
+      if (
+        e.ctrlKey || e.metaKey || e.altKey ||
+        ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Enter", "Escape"].includes(e.key)
+      ) {
+        return;
+      }
+      const selectedLen = (el.selectionEnd || 0) - (el.selectionStart || 0);
+      if (el.value.length >= maxLen && selectedLen === 0) {
+        triggerLimitToast();
+      }
+    });
+
+    // 2. 攔截貼上 (paste)
+    el.addEventListener("paste", (e) => {
+      const pasteText = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+      const selectedLen = (el.selectionEnd || 0) - (el.selectionStart || 0);
+      if (el.value.length + pasteText.length - selectedLen > maxLen) {
+        triggerLimitToast(`${labelName}不可超過 ${maxLen} 字，已自動截斷`);
+      }
+    });
+
+    // 3. 即時防禦截斷 (input)
+    el.addEventListener("input", () => {
+      if (el.value.length > maxLen) {
+        el.value = el.value.slice(0, maxLen);
+        triggerLimitToast();
+      }
+    });
+  }
+
+  // 綁定各輸入欄位的字數上限即時提示
+  setupInputLimitFeedback("record-amount", 8, "金額");
+  setupInputLimitFeedback("custom-cat-input", 8, "分類標籤");
+  setupInputLimitFeedback("record-note", 20, "備註說明");
+  setupInputLimitFeedback("profile-display-name-input", 20, "用戶名稱");
+  setupInputLimitFeedback("auth-display-name", 20, "用戶名稱");
+  setupInputLimitFeedback("auth-username", 20, "帳號名稱");
 
   // Custom Category Input
   customCatInput.addEventListener("input", (e) => {
@@ -364,6 +415,14 @@ function setupRecordModalHandlers() {
     }
     if (!selectedCategory) {
       showToast("請選擇分類", "warning");
+      return;
+    }
+    if (selectedCategory.length > 8) {
+      showToast("分類標籤不可超過 8 個字元", "warning");
+      return;
+    }
+    if (note.length > 20) {
+      showToast("備註說明不可超過 20 個字元", "warning");
       return;
     }
 

@@ -177,7 +177,8 @@
       <div class="modal-header modal-record-header">
         <button type="button" class="modal-close-btn" id="btn-close-record-modal" aria-label="關閉">✕</button>
         <h2 class="modal-title" id="record-modal-title">記一筆日常</h2>
-        <button type="submit" form="record-form" class="modal-header-confirm-btn" id="btn-header-save-record">確認</button>
+        <button type="submit" form="record-form" class="modal-header-confirm-btn"
+          id="btn-header-save-record">確認</button>
       </div>
 
       <form id="record-form" class="modal-form">
@@ -196,8 +197,7 @@
           <div class="amount-input-wrap">
             <span class="currency-symbol">NT$</span>
             <input type="number" id="record-amount" class="input-amount" placeholder="0" min="1" max="99999999" step="1"
-              inputmode="numeric" pattern="[0-9]*" maxlength="8"
-              oninput="if (this.value.length > 8) this.value = this.value.slice(0, 8);" required autofocus>
+              inputmode="numeric" pattern="[0-9]*" maxlength="8" required autofocus>
           </div>
           <!-- Quick Amount Buttons -->
           <div class="quick-amounts">
@@ -225,7 +225,8 @@
             <!-- Populated via JS based on type -->
           </div>
           <div class="custom-category-row">
-            <input type="text" id="custom-cat-input" class="form-input custom-cat-input" placeholder="或自行輸入自訂標籤 (選填)" maxlength="8">
+            <input type="text" id="custom-cat-input" class="form-input custom-cat-input" placeholder="或自行輸入自訂標籤 (選填)"
+              maxlength="8">
           </div>
         </div>
 
@@ -322,7 +323,7 @@
                   d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
                 </path>
               </svg>
-              調整預算
+              調整
             </button>
           </div>
 
@@ -358,8 +359,8 @@
                 <div class="budget-fields-row">
                   <div class="budget-input-field">
                     <label for="budget-limit-input">每月支出預算上限 (NT$):</label>
-                    <input type="number" id="budget-limit-input" class="form-input" min="0" step="500" inputmode="numeric"
-                      pattern="[0-9]*" placeholder="例如：20000">
+                    <input type="number" id="budget-limit-input" class="form-input" min="0" step="500"
+                      inputmode="numeric" pattern="[0-9]*" placeholder="例如：20000">
                   </div>
                   <div class="budget-input-field">
                     <label for="budget-threshold-input">超支警示門檻 (%):</label>
@@ -445,17 +446,24 @@
                 <button class="chart-toggle-pill" id="donut-type-income">收入分類</button>
               </div>
               <button type="button" class="btn-chart-zoom mobile-only" id="btn-zoom-donut" aria-label="放大圓餅圖">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  <line x1="11" y1="8" x2="11" y2="14" />
+                  <line x1="8" y1="11" x2="14" y2="11" />
+                </svg>
               </button>
             </div>
             <div class="donut-chart-layout">
-              <div class="donut-chart-container" id="donut-chart-container">
+              <div class="donut-chart-container" id="donut-chart-container" title="點擊放大圖表">
                 <!-- SVG Donut Chart rendered here -->
               </div>
               <div class="donut-legend-wrapper">
                 <button type="button" class="btn btn-ghost btn-xs mobile-legend-toggle" id="btn-toggle-mobile-legend">
                   <span id="legend-toggle-text">展開分類圖例</span>
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
@@ -471,10 +479,16 @@
             <div class="chart-sub-controls">
               <span class="chart-caption">近六個月收支走勢圖</span>
               <button type="button" class="btn-chart-zoom mobile-only" id="btn-zoom-trend" aria-label="放大折線圖">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  <line x1="11" y1="8" x2="11" y2="14" />
+                  <line x1="8" y1="11" x2="14" y2="11" />
+                </svg>
               </button>
             </div>
-            <div class="trend-chart-container" id="trend-chart-container">
+            <div class="trend-chart-container" id="trend-chart-container" title="點擊放大圖表">
               <!-- SVG Line Chart rendered here -->
             </div>
           </div>
@@ -566,7 +580,8 @@
           <!-- Email (Shown in Register & Forgot modes) -->
           <div class="form-group hidden" id="group-email">
             <label class="form-label" for="auth-email" id="label-email">安全電子信箱 (二次驗證用)</label>
-            <input type="email" id="auth-email" class="form-input" placeholder="例如：user@example.com" autocomplete="email">
+            <input type="email" id="auth-email" class="form-input" placeholder="例如：user@example.com"
+              autocomplete="email">
             <span class="form-hint" id="hint-email">忘記密碼時將透過此信箱發送驗證碼進行二次安全驗證</span>
           </div>
 
@@ -574,7 +589,8 @@
           <div class="form-group hidden" id="group-verify-code">
             <label class="form-label" for="auth-verify-code">信箱二次驗證碼</label>
             <div class="verify-code-input-wrapper">
-              <input type="text" id="auth-verify-code" class="form-input" placeholder="請輸入 6 位數驗證碼" maxlength="6" inputmode="numeric">
+              <input type="text" id="auth-verify-code" class="form-input" placeholder="請輸入 6 位數驗證碼" maxlength="6"
+                inputmode="numeric">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-send-verify-code">發送驗證碼</button>
             </div>
             <span class="form-hint">請點擊按鈕獲取 6 位數驗證碼 (有效時間 10 分鐘)</span>
@@ -676,7 +692,8 @@
         <form id="profile-form" class="modal-form">
           <!-- Section 1: Display Name -->
           <div class="form-section-title">
-            <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
@@ -685,7 +702,8 @@
 
           <div class="form-group">
             <label class="form-label" for="profile-display-name-input">用戶名稱 (顯示暱稱)</label>
-            <input type="text" id="profile-display-name-input" class="form-input" placeholder="請輸入您想呈現的暱稱" maxlength="20" required>
+            <input type="text" id="profile-display-name-input" class="form-input" placeholder="請輸入您想呈現的暱稱"
+              maxlength="20" required>
             <span class="form-hint">登入後將於右上角頭像旁與首頁呈現</span>
           </div>
 
@@ -697,7 +715,8 @@
 
           <!-- Section 2: Change Password -->
           <div class="form-section-title">
-            <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="svg-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
@@ -707,9 +726,12 @@
           <div class="form-group">
             <label class="form-label" for="profile-new-password">新密碼</label>
             <div class="password-input-wrapper">
-              <input type="password" id="profile-new-password" class="form-input" placeholder="輸入新密碼 (6至50字元，不改請留空)" maxlength="50" autocomplete="new-password">
-              <button type="button" class="password-toggle-btn" id="btn-toggle-profile-pwd" aria-label="切換顯示密碼" tabindex="-1">
-                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <input type="password" id="profile-new-password" class="form-input" placeholder="輸入新密碼 (6至50字元，不改請留空)"
+                maxlength="50" autocomplete="new-password">
+              <button type="button" class="password-toggle-btn" id="btn-toggle-profile-pwd" aria-label="切換顯示密碼"
+                tabindex="-1">
+                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
@@ -720,9 +742,12 @@
           <div class="form-group">
             <label class="form-label" for="profile-confirm-password">確認新密碼</label>
             <div class="password-input-wrapper">
-              <input type="password" id="profile-confirm-password" class="form-input" placeholder="再次輸入新密碼" maxlength="50" autocomplete="new-password">
-              <button type="button" class="password-toggle-btn" id="btn-toggle-profile-confirm-pwd" aria-label="切換顯示密碼" tabindex="-1">
-                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <input type="password" id="profile-confirm-password" class="form-input" placeholder="再次輸入新密碼"
+                maxlength="50" autocomplete="new-password">
+              <button type="button" class="password-toggle-btn" id="btn-toggle-profile-confirm-pwd" aria-label="切換顯示密碼"
+                tabindex="-1">
+                <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
@@ -746,14 +771,48 @@
     </div>
   </div>
 
-  <!-- Chart Lightbox (mobile tap-to-zoom) -->
-  <div id="modal-chart-lightbox" class="modal-overlay modal-chart-lightbox" style="display:none;" role="dialog" aria-modal="true">
+  <!-- Chart Lightbox (tap-to-zoom & pinch-zoom) -->
+  <div id="modal-chart-lightbox" class="modal-chart-lightbox hidden" role="dialog" aria-modal="true">
     <div class="chart-lightbox-card">
       <button type="button" class="chart-lightbox-close" id="btn-lightbox-close" aria-label="關閉放大圖表">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
       </button>
-      <div class="chart-lightbox-title" id="lightbox-title"></div>
-      <div class="chart-lightbox-body" id="lightbox-chart-body"></div>
+      <div class="chart-lightbox-header">
+        <div class="chart-lightbox-title" id="lightbox-title">圖表放大</div>
+        <div class="chart-lightbox-toolbar">
+          <span class="zoom-level-badge" id="lightbox-zoom-badge">100%</span>
+          <button type="button" class="btn-lightbox-tool" id="btn-zoom-in" title="放大 (+25%)" aria-label="放大">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button type="button" class="btn-lightbox-tool" id="btn-zoom-out" title="縮小 (-25%)" aria-label="縮小">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <button type="button" class="btn-lightbox-tool" id="btn-zoom-reset" title="重設縮放 (100%)" aria-label="重設縮放">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="chart-lightbox-body" id="lightbox-chart-body">
+        <div class="chart-zoom-viewport" id="chart-zoom-viewport">
+          <div class="chart-zoom-content" id="chart-zoom-content"></div>
+        </div>
+        <div class="chart-lightbox-legend-area" id="chart-lightbox-legend-area"></div>
+      </div>
     </div>
   </div>
 
