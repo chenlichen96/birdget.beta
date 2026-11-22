@@ -51,6 +51,7 @@ class Database {
       id: "demo-user-id",
       username: "demo",
       displayName: "小晴 (日和記帳)",
+      email: "demo@hiyori.app",
       passwordHash: hash,
       salt: salt,
       budget: {
@@ -153,6 +154,19 @@ class Database {
     user.budget = budget;
     await this.persist();
     return user.budget;
+  }
+
+  async updateUserProfile(userId: string, updates: { displayName?: string; email?: string }): Promise<User | null> {
+    const user = this.data.users.find((u) => u.id === userId);
+    if (!user) return null;
+    if (updates.displayName !== undefined) {
+      user.displayName = updates.displayName.trim();
+    }
+    if (updates.email !== undefined) {
+      user.email = updates.email.trim();
+    }
+    await this.persist();
+    return user;
   }
 
   async updateUserPassword(userId: string, passwordHash: string, salt: string): Promise<User | null> {

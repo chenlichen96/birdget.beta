@@ -180,6 +180,27 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.user-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: opacity 0.15s ease;
+}
+
+.user-profile-trigger:hover {
+  opacity: 0.85;
+}
+
+.user-profile-trigger:hover .user-avatar {
+  background-color: var(--color-primary-blue-light);
+  color: var(--color-primary-blue-hover);
+}
+
 .user-avatar {
   display: inline-flex;
   align-items: center;
@@ -511,6 +532,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .record-cat-icon {
@@ -553,12 +576,28 @@ body {
 .record-item-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .record-item-title {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.record-item-title.expanded {
+  white-space: normal;
+  word-break: break-all;
+}
+
+.record-item-title:hover {
+  color: var(--color-primary-blue-hover);
 }
 
 .record-item-meta {
@@ -567,6 +606,9 @@ body {
   gap: 8px;
   font-size: 0.78rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .record-category-badge {
@@ -580,12 +622,14 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .record-item-amount {
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .record-item-amount.expense {
@@ -794,6 +838,27 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* 記帳彈窗 Header 特殊排版 */
+.modal-record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header-confirm-btn {
+  display: none;
+}
+
+@media (min-width: 641px) {
+  .modal-record-header .modal-title {
+    order: 1;
+    text-align: left;
+  }
+  .modal-record-header .modal-close-btn {
+    order: 2;
+  }
 }
 
 .modal-title {
@@ -1341,11 +1406,136 @@ body {
   border-top: 1px dashed var(--border-color);
 }
 
-.budget-form-inline {
+/* 手機圖例展開切換鈕（電腦版預設隱藏） */
+.mobile-legend-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-bottom: 6px;
+  color: var(--color-primary-blue-hover);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobile-legend-toggle .chevron-icon {
+  transition: transform 0.2s ease;
+}
+
+/* 主題預算與固定收支抽屜樣式 */
+.budget-setting-section {
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border-color);
+  margin-bottom: 8px;
+}
+
+.setting-subtitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.setting-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.setting-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.budget-fields-row {
   display: flex;
   gap: 12px;
-  align-items: flex-end;
   flex-wrap: wrap;
+}
+
+.cat-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.cat-budget-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #FCFCFD;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.cat-budget-label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.cat-budget-input {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+.recurring-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recurring-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FCFCFD;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.recurring-row input, .recurring-row select {
+  font-size: 0.82rem;
+  padding: 4px 8px;
+}
+
+.recurring-name {
+  flex: 2;
+  min-width: 90px;
+}
+
+.recurring-type {
+  width: 65px;
+}
+
+.recurring-amount {
+  flex: 1.5;
+  min-width: 80px;
+}
+
+.recurring-cat {
+  flex: 1.5;
+  min-width: 85px;
+}
+
+.btn-xs {
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.budget-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .budget-input-field {
@@ -1852,6 +2042,94 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* ==================== 個人帳號設定彈窗樣式 ==================== */
+.modal-profile-card {
+  max-width: 480px;
+}
+
+.profile-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.profile-user-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background-color: var(--color-primary-blue-light);
+  border: 1px solid var(--color-primary-blue-muted);
+  border-radius: var(--radius-md);
+}
+
+.profile-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary-blue) 0%, var(--color-primary-blue-hover) 100%);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(115, 146, 183, 0.3);
+}
+
+.profile-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-account-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-username-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-main);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 6px;
+}
+
+.verify-code-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.verify-code-input-wrapper .form-input {
+  flex: 1;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-align: center;
+}
+
+.verify-code-input-wrapper .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 0.85rem;
 }
 
 /* 隱藏輔助類別 */

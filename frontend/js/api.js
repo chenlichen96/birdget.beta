@@ -248,13 +248,37 @@ class LocalFallbackEngine {
     localStorage.removeItem(CURRENT_USER_KEY);
   }
 
-  resetPassword(username, newPassword) {
+  sendResetCode(username, email) {
+    const db = this.getDb();
+    const user = db.users.find((u) => u.username.toLowerCase() === username.trim().toLowerCase());
+    if (!user) throw new Error("查無此使用者帳號，請確認帳號是否正確");
+    if (user.email && user.email.toLowerCase() !== email.trim().toLowerCase()) {
+      throw new Error("信箱與該帳號綁定的安全信箱不符，二次驗證失敗");
+    }
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    this.resetCodes = this.resetCodes || {};
+    this.resetCodes[username.toLowerCase()] = { code, email: email.trim().toLowerCase(), expiresAt: Date.now() + 600000 };
+    return { message: "安全驗證碼已發送至您的信箱", previewCode: code };
+  }
+
+  resetPassword(username, newPassword, code, email) {
     const db = this.getDb();
     const user = db.users.find((u) => u.username.toLowerCase() === username.trim().toLowerCase());
     if (!user) {
       throw new Error("查無此使用者帳號，請確認帳號是否正確");
     }
+    if (!code) {
+      throw new Error("請先輸入信箱驗證碼以完成二次驗證");
+    }
+    const rec = this.resetCodes?.[username.toLowerCase()];
+    if (!rec || rec.expiresAt < Date.now()) {
+      throw new Error("驗證碼不存在或已逾期，請重新發送");
+    }
+    if (rec.code !== code.trim()) {
+      throw new Error("二次驗證碼錯誤，請重新確認");
+    }
     user.password = newPassword;
+    if (email) user.email = email.trim();
     this.saveDb(db);
     const token = `local_${Date.now()}`;
     setToken(token);
@@ -262,8 +286,32 @@ class LocalFallbackEngine {
     return {
       message: "密碼重設成功！已自動為您登入系統",
       token,
-      user: { id: user.id, username: user.username, displayName: user.displayName, budget: user.budget },
+      user: { id: user.id, username: user.username, displayName: user.displayName, email: user.email, budget: user.budget },
     };
+  }
+
+  updateProfile(displayName, email) {
+    const me = this.getMe();
+    if (!me) throw new Error("請先登入");
+    const db = this.getDb();
+    const user = db.users.find((u) => u.id === me.user.id);
+    if (!user) throw new Error("找不到用戶");
+    user.displayName = displayName.trim();
+    if (email !== undefined) user.email = (email || "").trim();
+    this.saveDb(db);
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    return { message: "用戶資料更新成功", user };
+  }
+
+  changePassword(newPassword) {
+    const me = this.getMe();
+    if (!me) throw new Error("請先登入");
+    const db = this.getDb();
+    const user = db.users.find((u) => u.id === me.user.id);
+    if (!user) throw new Error("找不到用戶");
+    user.password = newPassword;
+    this.saveDb(db);
+    return { message: "密碼修改成功" };
   }
 
   // Records
@@ -311,6 +359,9 @@ class LocalFallbackEngine {
   createRecord(record) {
     const me = this.getMe();
     if (!me) throw new Error("請先登入");
+    if (record.amount && record.amount > 99999999) {
+      throw new Error("金額上限為 8 位數 (最高 99,999,999)");
+    }
     const db = this.getDb();
 
     const newRecord = {
@@ -345,6 +396,9 @@ class LocalFallbackEngine {
   updateRecord(id, patch) {
     const me = this.getMe();
     if (!me) throw new Error("請先登入");
+    if (patch.amount !== undefined && patch.amount > 99999999) {
+      throw new Error("金額上限為 8 位數 (最高 99,999,999)");
+    }
     const db = this.getDb();
     const idx = db.records.findIndex((r) => r.id === id && r.userId === me.user.id);
     if (idx === -1) throw new Error("找不到該筆記帳紀錄");
@@ -391,13 +445,18 @@ class LocalFallbackEngine {
     };
   }
 
-  updateBudget(monthlyLimit, alertThreshold) {
+  updateBudget(monthlyLimit, alertThreshold, extras = {}) {
     const me = this.getMe();
     if (!me) throw new Error("請先登入");
     const db = this.getDb();
     const user = db.users.find((u) => u.id === me.user.id);
     if (user) {
-      user.budget = { monthlyLimit, alertThreshold };
+      user.budget = {
+        monthlyLimit,
+        alertThreshold,
+        categoryBudgets: extras.categoryBudgets || {},
+        recurringItems: extras.recurringItems || [],
+      };
       this.saveDb(db);
       localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
     }
@@ -555,11 +614,26 @@ function handleLocalRoute(endpoint, options) {
     if (!me) throw new Error("未登入");
     return me;
   }
+  if (path === "/api/auth/send-reset-code" && method === "POST") {
+    return localEngine.sendResetCode(body.username, body.email);
+  }
+  if (path === "/api/auth/reset-password" && method === "POST") {
+    return localEngine.resetPassword(body.username, body.newPassword, body.code, body.email);
+  }
+  if (path === "/api/auth/profile" && method === "PUT") {
+    return localEngine.updateProfile(body.displayName, body.email);
+  }
+  if (path === "/api/auth/change-password" && method === "PUT") {
+    return localEngine.changePassword(body.newPassword);
+  }
   if (path === "/api/budget" && method === "GET") {
     return localEngine.getBudget();
   }
   if (path === "/api/budget" && method === "PUT") {
-    return localEngine.updateBudget(body.monthlyLimit, body.alertThreshold);
+    return localEngine.updateBudget(body.monthlyLimit, body.alertThreshold, {
+      categoryBudgets: body.categoryBudgets,
+      recurringItems: body.recurringItems,
+    });
   }
   if (path === "/api/records/dates-with-records" && method === "GET") {
     return localEngine.getDatesWithRecords(qs.get("year"), qs.get("month"));
@@ -598,10 +672,10 @@ function handleLocalRoute(endpoint, options) {
 
 // API Methods
 const api = {
-  async register(username, password, displayName, remember = true) {
+  async register(username, password, displayName, email, remember = true) {
     const data = await request("/api/auth/register", {
       method: "POST",
-      body: JSON.stringify({ username, password, displayName }),
+      body: JSON.stringify({ username, password, displayName, email }),
     });
     if (data.token) setToken(data.token, remember);
     return data;
@@ -616,10 +690,17 @@ const api = {
     return data;
   },
 
-  async resetPassword(username, newPassword, remember = true) {
+  async sendResetCode(username, email) {
+    return await request("/api/auth/send-reset-code", {
+      method: "POST",
+      body: JSON.stringify({ username, email }),
+    });
+  },
+
+  async resetPassword(username, newPassword, code, email, remember = true) {
     const data = await request("/api/auth/reset-password", {
       method: "POST",
-      body: JSON.stringify({ username, newPassword }),
+      body: JSON.stringify({ username, newPassword, code, email }),
     });
     if (data.token) setToken(data.token, remember);
     return data;
@@ -643,6 +724,20 @@ const api = {
       setToken(null);
       return null;
     }
+  },
+
+  async updateProfile(displayName, email = undefined) {
+    return await request("/api/auth/profile", {
+      method: "PUT",
+      body: JSON.stringify({ displayName, email }),
+    });
+  },
+
+  async changePassword(newPassword, currentPassword = null) {
+    return await request("/api/auth/change-password", {
+      method: "PUT",
+      body: JSON.stringify({ newPassword, currentPassword }),
+    });
   },
 
   async getRecords(params = {}) {
@@ -686,10 +781,15 @@ const api = {
     return await request("/api/budget");
   },
 
-  async updateBudget(monthlyLimit, alertThreshold = 80) {
+  async updateBudget(monthlyLimit, alertThreshold = 80, extras = {}) {
     return await request("/api/budget", {
       method: "PUT",
-      body: JSON.stringify({ monthlyLimit, alertThreshold }),
+      body: JSON.stringify({
+        monthlyLimit,
+        alertThreshold,
+        categoryBudgets: extras.categoryBudgets,
+        recurringItems: extras.recurringItems,
+      }),
     });
   },
 

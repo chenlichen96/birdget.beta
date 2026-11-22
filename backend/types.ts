@@ -1,14 +1,26 @@
 export type RecordType = "expense" | "income";
 
+export interface RecurringItem {
+  id: string;
+  name: string; // e.g. "每月薪資", "房租", "定期票"
+  type: RecordType;
+  amount: number;
+  category: string;
+  dayOfMonth: number; // 1~31
+}
+
 export interface Budget {
   monthlyLimit: number; // e.g. 20000, 0 means unset
   alertThreshold: number; // percentage (e.g. 80 means 80%)
+  categoryBudgets?: Record<string, number>; // 主題/分類預算，例如 { "餐飲飲食": 8000, "休閒娛樂": 3000 }
+  recurringItems?: RecurringItem[]; // 每月固定收支清單
 }
 
 export interface User {
   id: string;
   username: string;
   displayName: string;
+  email?: string; // 電子郵件 (用於忘記密碼二次驗證)
   passwordHash: string;
   salt: string;
   budget: Budget;

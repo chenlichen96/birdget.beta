@@ -289,7 +289,14 @@ if (userA.budget.monthlyLimit !== 15000 || userB.budget.monthlyLimit !== 40000) 
   throw new Error("預算資料隔離失敗！");
 }
 
+// 7. Verify updateUserProfile
+const updatedA = await db.updateUserProfile(userA.id, { displayName: "小雅新名稱" });
+if (!updatedA || updatedA.displayName !== "小雅新名稱") {
+  throw new Error("更新用戶名稱失敗！");
+}
+
 console.log("  ✅ 5.1 會員 A 與 會員 B 私人紀錄、預算設定完全隔離，且越權讀取/修改/刪除均被嚴格阻擋！");
+console.log("  ✅ 5.2 用戶名稱更新功能 (updateUserProfile) 驗證通過！");
 
 // Clean up test data from DB so db.json stays clean
 const allUsers = await db.findUserByUsername("demo");

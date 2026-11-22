@@ -116,9 +116,15 @@
     align-items: flex-end;
     padding: 0;
     padding-top: calc(env(safe-area-inset-top, 0px) + 20px); /* 避開頂部相機挖孔與狀態列 */
+    overflow-x: hidden; /* 防止背景橫向滑動 */
+    touch-action: pan-y; /* 鎖定只允許垂直滑動，消除迷之左右滑動 */
   }
 
   .modal-card {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden; /* 徹底消除彈窗左右晃動 */
+    touch-action: pan-y;
     max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 30px); /* 動態高度扣除頂部空間 */
     max-height: calc(88vh - 20px); /* 兜底 fallback */
     border-bottom-left-radius: 0;
@@ -140,13 +146,78 @@
     padding: 14px 18px;
   }
 
+  /* 手機版記帳彈窗 Header：左上角 ✕，中間標題，右上角確認 */
+  .modal-record-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+
+  .modal-record-header .modal-close-btn {
+    order: 1;
+    font-size: 1.25rem;
+    padding: 6px;
+    margin: 0;
+  }
+
+  .modal-record-header .modal-title {
+    order: 2;
+    flex: 1;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    padding: 0 8px;
+  }
+
+  .modal-record-header .modal-header-confirm-btn {
+    order: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-blue, #7392B7);
+    color: #FFFFFF;
+    border: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(115, 146, 183, 0.35);
+    transition: var(--transition);
+  }
+
+  .modal-record-header .modal-header-confirm-btn:active {
+    transform: scale(0.96);
+    background: var(--color-primary-blue-hover, #5e7d9f);
+  }
+
+  /* 手機版隱藏記帳彈窗底部的確認大按鈕（已移至右上角） */
+  .modal-record-card .modal-actions {
+    display: none;
+  }
+
   .modal-form {
     padding: 16px 18px;
     gap: 14px;
+    overflow-x: hidden;
+    touch-action: pan-y;
   }
 
   .form-input, .form-select {
     font-size: 16px; /* 防止 iOS Safari 點擊輸入框時自動放大頁面 */
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .amount-input-wrap {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .input-amount {
+    max-width: 100%;
   }
 
   /* 登入/註冊彈窗：手機版縮小間距、允許捲動 */
@@ -200,13 +271,46 @@
     font-size: 1.2rem;
   }
 
+  /* 圓餅圖在手機端：圖表緊湊，圖例預設摺疊或可點擊展開 */
   .donut-chart-layout {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 8px;
+    align-items: center;
   }
 
   .donut-chart-container {
-    min-height: 180px;
+    min-height: 160px;
+    max-height: 190px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .donut-chart-container svg {
+    max-width: 170px !important;
+    max-height: 170px !important;
+  }
+
+  .mobile-legend-toggle {
+    display: flex !important;
+  }
+
+  .donut-legend-container {
+    max-height: 160px;
+    overflow-y: auto;
+    transition: all 0.25s ease;
+  }
+
+  /* 手機端預設摺疊圖例，讓底下清單迅速往上呈現 */
+  .donut-legend-wrapper.collapsed .donut-legend-container {
+    display: none;
+  }
+
+  .donut-legend-wrapper.collapsed .chevron-icon {
+    transform: rotate(0deg);
+  }
+
+  .donut-legend-wrapper:not(.collapsed) .chevron-icon {
+    transform: rotate(180deg);
   }
 
   .filter-group {

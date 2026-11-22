@@ -184,11 +184,21 @@ function renderDayRecords(records) {
 
     const card = document.createElement("div");
     card.className = "record-item-card";
+    const fullNote = record.note ? record.note.trim() : "";
+    const isLongNote = fullNote.length > 8;
+    const truncatedNote = isLongNote ? `${fullNote.slice(0, 8)}…` : fullNote;
+    const displayTitle = fullNote || record.category;
+
     card.innerHTML = `
       <div class="record-item-left">
         <span class="record-cat-icon ${isIncome ? "is-income" : ""}">${catIcon}</span>
         <div class="record-item-info">
-          <span class="record-item-title">${escapeHtml(record.note || record.category)}</span>
+          <span class="record-item-title ${isLongNote ? "can-expand" : ""}" 
+                data-full="${escapeHtml(displayTitle)}" 
+                data-short="${escapeHtml(isLongNote ? truncatedNote : displayTitle)}"
+                title="${escapeHtml(displayTitle)}">
+            ${escapeHtml(isLongNote ? truncatedNote : displayTitle)}
+          </span>
           <div class="record-item-meta">
             <span class="record-category-badge">${escapeHtml(record.category)}</span>
             <span>${escapeHtml(record.account || "現金")}</span>
@@ -215,6 +225,19 @@ function renderDayRecords(records) {
         </div>
       </div>
     `;
+
+    // 點擊長文字展開/收合
+    if (isLongNote) {
+      const titleSpan = card.querySelector(".record-item-title");
+      titleSpan.addEventListener("click", () => {
+        titleSpan.classList.toggle("expanded");
+        if (titleSpan.classList.contains("expanded")) {
+          titleSpan.textContent = titleSpan.dataset.full;
+        } else {
+          titleSpan.textContent = titleSpan.dataset.short;
+        }
+      });
+    }
 
     // Edit handler
     card.querySelector(".edit-btn").addEventListener("click", () => {
@@ -281,8 +304,21 @@ function setupRecordModalHandlers() {
       const amtInput = document.getElementById("record-amount");
       const addVal = Number(btn.dataset.amt);
       const currentVal = Number(amtInput.value) || 0;
-      amtInput.value = currentVal + addVal;
+      const nextVal = currentVal + addVal;
+      if (String(nextVal).length <= 8) {
+        amtInput.value = nextVal;
+      } else {
+        amtInput.value = 99999999;
+      }
     });
+  });
+
+  // Limit amount input to 8 characters max
+  const recordAmtInput = document.getElementById("record-amount");
+  recordAmtInput.addEventListener("input", () => {
+    if (recordAmtInput.value.length > 8) {
+      recordAmtInput.value = recordAmtInput.value.slice(0, 8);
+    }
   });
 
   // Custom Category Input
@@ -318,6 +354,10 @@ function setupRecordModalHandlers() {
       showToast("請輸入大於 0 的有效金額", "warning");
       return;
     }
+    if (String(Math.round(amount)).length > 8 || amount > 99999999) {
+      showToast("金額不可超過 8 位數 (最高 99,999,999)", "warning");
+      return;
+    }
     if (!date) {
       showToast("請選擇日期", "warning");
       return;
@@ -337,8 +377,15 @@ function setupRecordModalHandlers() {
     };
 
     const submitBtn = document.getElementById("btn-save-record");
-    submitBtn.disabled = true;
-    submitBtn.textContent = "儲存中...";
+    const headerSubmitBtn = document.getElementById("btn-header-save-record");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "儲存中...";
+    }
+    if (headerSubmitBtn) {
+      headerSubmitBtn.disabled = true;
+      headerSubmitBtn.textContent = "儲存中...";
+    }
 
     try {
       let resp;
@@ -367,8 +414,14 @@ function setupRecordModalHandlers() {
     } catch (err) {
       showToast(err.message || "儲存失敗", "error");
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "確認儲存";
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "確認儲存";
+      }
+      if (headerSubmitBtn) {
+        headerSubmitBtn.disabled = false;
+        headerSubmitBtn.textContent = "確認";
+      }
     }
   });
 }
@@ -548,6 +601,63 @@ function setupStatsModalHandlers() {
   const drawer = document.getElementById("budget-setting-drawer");
   const btnCancelBudget = document.getElementById("btn-cancel-budget-edit");
   const budgetForm = document.getElementById("budget-setting-form");
+  const btnAddRecurring = document.getElementById("btn-add-recurring");
+  const catBudgetGrid = document.getElementById("cat-budget-grid");
+  const recurringList = document.getElementById("recurring-items-list");
+
+  // 初始化主題預算分類輸入項
+  function renderCatBudgetInputs(categoryBudgets = {}) {
+    catBudgetGrid.innerHTML = "";
+    CATEGORIES.expense.forEach((cat) => {
+      const val = categoryBudgets[cat.name] || "";
+      const div = document.createElement("div");
+      div.className = "cat-budget-item";
+      div.innerHTML = `
+        <span class="cat-budget-label">${cat.name}</span>
+        <input type="number" class="form-input cat-budget-input" data-category="${escapeHtml(cat.name)}" 
+               placeholder="未設" min="0" step="500" value="${val}">
+      `;
+      catBudgetGrid.appendChild(div);
+    });
+  }
+
+  // 初始化固定收支列
+  function addRecurringRow(item = { id: "", name: "", type: "expense", amount: "", category: "餐飲飲食", dayOfMonth: 1 }) {
+    const row = document.createElement("div");
+    row.className = "recurring-row";
+    row.dataset.id = item.id || `rec_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+
+    const catOptions = (item.type === "income" ? CATEGORIES.income : CATEGORIES.expense)
+      .map(c => `<option value="${c.name}" ${c.name === item.category ? "selected" : ""}>${c.name}</option>`)
+      .join("");
+
+    row.innerHTML = `
+      <input type="text" class="form-input recurring-name" placeholder="項目 (如:房租/薪水)" value="${escapeHtml(item.name || "")}">
+      <select class="form-select recurring-type">
+        <option value="expense" ${item.type === "expense" ? "selected" : ""}>支出</option>
+        <option value="income" ${item.type === "income" ? "selected" : ""}>收入</option>
+      </select>
+      <select class="form-select recurring-cat">
+        ${catOptions}
+      </select>
+      <input type="number" class="form-input recurring-amount" placeholder="金額" min="1" value="${item.amount || ""}">
+      <button type="button" class="btn btn-ghost btn-xs btn-del-recurring" title="刪除">✕</button>
+    `;
+
+    // 類型切換時連帶更新分類下拉選單
+    const typeSelect = row.querySelector(".recurring-type");
+    const catSelect = row.querySelector(".recurring-cat");
+    typeSelect.addEventListener("change", () => {
+      const isInc = typeSelect.value === "income";
+      const list = isInc ? CATEGORIES.income : CATEGORIES.expense;
+      catSelect.innerHTML = list.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+    });
+
+    row.querySelector(".btn-del-recurring").addEventListener("click", () => row.remove());
+    recurringList.appendChild(row);
+  }
+
+  btnAddRecurring.addEventListener("click", () => addRecurringRow());
 
   btnToggleBudget.addEventListener("click", () => {
     drawer.classList.toggle("hidden");
@@ -556,6 +666,16 @@ function setupStatsModalHandlers() {
       const curThresh = currentUser?.budget?.alertThreshold || 80;
       document.getElementById("budget-limit-input").value = curLimit;
       document.getElementById("budget-threshold-input").value = curThresh;
+
+      renderCatBudgetInputs(currentUser?.budget?.categoryBudgets || {});
+      recurringList.innerHTML = "";
+      const recurrings = currentUser?.budget?.recurringItems || [];
+      if (recurrings.length === 0) {
+        addRecurringRow({ name: "每月薪資", type: "income", amount: 45000, category: "薪水收入", dayOfMonth: 5 });
+        addRecurringRow({ name: "房屋租金", type: "expense", amount: 12000, category: "居家生活", dayOfMonth: 1 });
+      } else {
+        recurrings.forEach(item => addRecurringRow(item));
+      }
     }
   });
 
@@ -566,12 +686,40 @@ function setupStatsModalHandlers() {
     const limit = Number(document.getElementById("budget-limit-input").value);
     const threshold = Number(document.getElementById("budget-threshold-input").value);
 
+    // 蒐集主題分類預算
+    const categoryBudgets = {};
+    document.querySelectorAll(".cat-budget-input").forEach(input => {
+      const amt = Number(input.value);
+      if (!isNaN(amt) && amt > 0) {
+        categoryBudgets[input.dataset.category] = amt;
+      }
+    });
+
+    // 蒐集每月固定收支
+    const recurringItems = [];
+    document.querySelectorAll(".recurring-row").forEach(row => {
+      const name = row.querySelector(".recurring-name").value.trim();
+      const type = row.querySelector(".recurring-type").value;
+      const category = row.querySelector(".recurring-cat").value;
+      const amount = Number(row.querySelector(".recurring-amount").value);
+      if (name && !isNaN(amount) && amount > 0) {
+        recurringItems.push({
+          id: row.dataset.id,
+          name,
+          type,
+          category,
+          amount,
+          dayOfMonth: 1,
+        });
+      }
+    });
+
     try {
-      const resp = await api.updateBudget(limit, threshold);
+      const resp = await api.updateBudget(limit, threshold, { categoryBudgets, recurringItems });
       if (currentUser) {
         currentUser.budget = resp.budget;
       }
-      showToast("預算設定已更新", "success");
+      showToast("預算與每月固定收支已更新", "success");
       drawer.classList.add("hidden");
       loadStatsReport();
       updateBudgetBadge();
@@ -582,6 +730,18 @@ function setupStatsModalHandlers() {
 
   // Export CSV
   document.getElementById("btn-export-csv").addEventListener("click", exportRecordsToCSV);
+  const btnToggleLegend = document.getElementById("btn-toggle-mobile-legend");
+  const legendWrapper = document.querySelector(".donut-legend-wrapper");
+  const legendToggleText = document.getElementById("legend-toggle-text");
+  if (btnToggleLegend && legendWrapper) {
+    // 預設為收起狀態
+    legendWrapper.classList.add("collapsed");
+    btnToggleLegend.addEventListener("click", () => {
+      legendWrapper.classList.toggle("collapsed");
+      const isCollapsed = legendWrapper.classList.contains("collapsed");
+      legendToggleText.textContent = isCollapsed ? "展開分類圖例" : "收合分類圖例";
+    });
+  }
 }
 
 async function openStatsModal() {

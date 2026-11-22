@@ -84,6 +84,9 @@ async function serveStaticFile(pathname: string): Promise<Response> {
   }
 }
 
+// In-memory verification codes for forgot password secondary verification
+const resetVerificationCodes = new Map<string, { code: string; email: string; expiresAt: number }>();
+
 // Request Handler
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -108,7 +111,7 @@ async function handler(req: Request): Promise<Response> {
       // 1. Auth: Register
       if (pathname === "/api/auth/register" && method === "POST") {
         const body = await req.json();
-        const { username, password, displayName } = body;
+        const { username, password, displayName, email } = body;
 
         const trimmedUser = (username || "").trim();
         if (!trimmedUser || !password) {
@@ -128,6 +131,9 @@ async function handler(req: Request): Promise<Response> {
         if (displayName && displayName.trim().length > 20) {
           return jsonResponse({ error: "暱稱長度不能超過 20 個字元" }, 400);
         }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+          return jsonResponse({ error: "電子信箱格式不正確" }, 400);
+        }
 
         const existing = await db.findUserByUsername(trimmedUser);
         if (existing) {
@@ -139,6 +145,7 @@ async function handler(req: Request): Promise<Response> {
           id: crypto.randomUUID(),
           username: trimmedUser,
           displayName: displayName?.trim() || trimmedUser,
+          email: email?.trim() || undefined,
           passwordHash: hash,
           salt: salt,
           budget: {
@@ -159,6 +166,7 @@ async function handler(req: Request): Promise<Response> {
             id: newUser.id,
             username: newUser.username,
             displayName: newUser.displayName,
+            email: newUser.email,
             budget: newUser.budget,
           },
         }, 201);
@@ -198,27 +206,93 @@ async function handler(req: Request): Promise<Response> {
         });
       }
 
-      // 2.1 Auth: Reset Password (忘記密碼處理)
+      // 2.05 Auth: Send Reset Verification Code (忘記密碼 - 二次驗證碼發送)
+      if (pathname === "/api/auth/send-reset-code" && method === "POST") {
+        const body = await req.json();
+        const { username, email } = body;
+        if (!username || !username.trim()) {
+          return jsonResponse({ error: "請輸入使用者帳號" }, 400);
+        }
+        if (!email || !email.trim()) {
+          return jsonResponse({ error: "請輸入綁定的安全電子信箱以進行二次驗證" }, 400);
+        }
+        const trimmedUser = username.trim().toLowerCase();
+        const trimmedEmail = email.trim().toLowerCase();
+
+        const user = await db.findUserByUsername(trimmedUser);
+        if (!user) {
+          return jsonResponse({ error: "查無此使用者帳號，請確認帳號是否正確" }, 404);
+        }
+
+        const registeredEmail = (user.email || (user.username === "demo" ? "demo@hiyori.app" : "")).toLowerCase();
+        if (registeredEmail && registeredEmail !== trimmedEmail) {
+          return jsonResponse({ error: "輸入之信箱與該帳號綁定的安全信箱不符，二次驗證失敗" }, 400);
+        }
+
+        // Generate 6-digit random code
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        resetVerificationCodes.set(trimmedUser, {
+          code,
+          email: trimmedEmail,
+          expiresAt: Date.now() + 10 * 60 * 1000,
+        });
+
+        const [namePart, domainPart] = trimmedEmail.split("@");
+        const masked = namePart.length > 2
+          ? `${namePart.charAt(0)}***${namePart.charAt(namePart.length - 1)}@${domainPart || ""}`
+          : `${namePart.charAt(0)}***@${domainPart || ""}`;
+
+        return jsonResponse({
+          message: `安全驗證碼已發送至 ${masked} (有效時間 10 分鐘)`,
+          previewCode: code,
+        });
+      }
+
+      // 2.1 Auth: Reset Password (忘記密碼處理 - 需信箱二次驗證)
       if (pathname === "/api/auth/reset-password" && method === "POST") {
         const body = await req.json();
-        const { username, newPassword } = body;
+        const { username, email, code, newPassword } = body;
 
         if (!username || !newPassword) {
           return jsonResponse({ error: "請提供帳號與新密碼" }, 400);
         }
 
-        const trimmedUser = username.trim();
+        const trimmedUser = username.trim().toLowerCase();
         const user = await db.findUserByUsername(trimmedUser);
         if (!user) {
           return jsonResponse({ error: "查無此使用者帳號，請確認帳號是否正確" }, 404);
+        }
+
+        if (!code || !code.trim()) {
+          return jsonResponse({ error: "為確保帳號安全，請先輸入信箱驗證碼以完成二次驗證" }, 400);
+        }
+
+        const verifyRecord = resetVerificationCodes.get(trimmedUser);
+        if (!verifyRecord || verifyRecord.expiresAt < Date.now()) {
+          return jsonResponse({ error: "驗證碼不存在或已逾時過期，請重新發送驗證碼" }, 400);
+        }
+
+        if (verifyRecord.code !== code.trim()) {
+          return jsonResponse({ error: "二次驗證碼錯誤，請重新確認" }, 400);
+        }
+
+        if (email && verifyRecord.email !== email.trim().toLowerCase()) {
+          return jsonResponse({ error: "驗證信箱與發送驗證碼之信箱不符" }, 400);
         }
 
         if (newPassword.length < 6 || newPassword.length > 50) {
           return jsonResponse({ error: "新密碼長度需介於 6 至 50 個字元" }, 400);
         }
 
+        resetVerificationCodes.delete(trimmedUser);
+
         const { hash, salt } = await hashPassword(newPassword);
         await db.updateUserPassword(user.id, hash, salt);
+
+        // If user didn't have email saved, bind this verified email
+        if (!user.email && email) {
+          await db.updateUserProfile(user.id, { email: email.trim() });
+        }
 
         // Invalidate old sessions for safety
         await db.deleteSessionsByUserId(user.id);
@@ -234,6 +308,7 @@ async function handler(req: Request): Promise<Response> {
             id: user.id,
             username: user.username,
             displayName: user.displayName,
+            email: user.email || email,
             budget: user.budget,
           },
         });
@@ -259,6 +334,7 @@ async function handler(req: Request): Promise<Response> {
             id: auth.user.id,
             username: auth.user.username,
             displayName: auth.user.displayName,
+            email: auth.user.email,
             budget: auth.user.budget,
           },
         });
@@ -270,6 +346,54 @@ async function handler(req: Request): Promise<Response> {
         return jsonResponse({ error: "請先登入以存取資料" }, 401);
       }
       const userId = auth.user.id;
+
+      // Update User Profile (displayName, email)
+      if (pathname === "/api/auth/profile" && method === "PUT") {
+        const body = await req.json();
+        const displayName = (body.displayName || "").trim();
+        const email = body.email !== undefined ? (body.email || "").trim() : undefined;
+        if (!displayName) {
+          return jsonResponse({ error: "用戶名稱不能為空" }, 400);
+        }
+        if (displayName.length > 30) {
+          return jsonResponse({ error: "用戶名稱長度不可超過 30 個字元" }, 400);
+        }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return jsonResponse({ error: "電子信箱格式不正確" }, 400);
+        }
+        const updated = await db.updateUserProfile(userId, { displayName, email });
+        if (!updated) {
+          return jsonResponse({ error: "找不到用戶" }, 404);
+        }
+        return jsonResponse({
+          message: "用戶資料更新成功",
+          user: {
+            id: updated.id,
+            username: updated.username,
+            displayName: updated.displayName,
+            email: updated.email,
+            budget: updated.budget,
+          },
+        });
+      }
+
+      // Update User Password (for logged-in user)
+      if (pathname === "/api/auth/change-password" && method === "PUT") {
+        const body = await req.json();
+        const { currentPassword, newPassword } = body;
+        if (!newPassword || newPassword.length < 6 || newPassword.length > 50) {
+          return jsonResponse({ error: "新密碼長度需介於 6 至 50 個字元" }, 400);
+        }
+        if (currentPassword) {
+          const isValid = await verifyPassword(currentPassword, auth.user.passwordHash, auth.user.salt);
+          if (!isValid) {
+            return jsonResponse({ error: "原密碼不正確" }, 400);
+          }
+        }
+        const { hash: newHash, salt: newSalt } = await hashPassword(newPassword);
+        await db.updateUserPassword(userId, newHash, newSalt);
+        return jsonResponse({ message: "密碼修改成功" });
+      }
 
       // 5. Budget: GET
       if (pathname === "/api/budget" && method === "GET") {
@@ -305,6 +429,12 @@ async function handler(req: Request): Promise<Response> {
         const body = await req.json();
         const monthlyLimit = Number(body.monthlyLimit);
         const alertThreshold = Number(body.alertThreshold) || 80;
+        const categoryBudgets = typeof body.categoryBudgets === "object" && body.categoryBudgets !== null
+          ? body.categoryBudgets
+          : (auth.user.budget.categoryBudgets || {});
+        const recurringItems = Array.isArray(body.recurringItems)
+          ? body.recurringItems
+          : (auth.user.budget.recurringItems || []);
 
         if (isNaN(monthlyLimit) || monthlyLimit < 0) {
           return jsonResponse({ error: "請輸入有效的預算金額" }, 400);
@@ -313,6 +443,8 @@ async function handler(req: Request): Promise<Response> {
         const updated = await db.updateUserBudget(userId, {
           monthlyLimit,
           alertThreshold: Math.min(100, Math.max(1, alertThreshold)),
+          categoryBudgets,
+          recurringItems,
         });
 
         return jsonResponse({ message: "預算設定更新成功", budget: updated });
@@ -383,11 +515,20 @@ async function handler(req: Request): Promise<Response> {
         if (isNaN(numericAmount) || numericAmount <= 0) {
           return jsonResponse({ error: "請輸入大於 0 的有效金額" }, 400);
         }
+        if (numericAmount > 99999999) {
+          return jsonResponse({ error: "金額上限為 8 位數 (最高 99,999,999)" }, 400);
+        }
         if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
           return jsonResponse({ error: "請提供格式正確的日期 (YYYY-MM-DD)" }, 400);
         }
         if (!category || !category.trim()) {
           return jsonResponse({ error: "請選擇或輸入分類標籤" }, 400);
+        }
+        if (category.trim().length > 8) {
+          return jsonResponse({ error: "分類標籤不可超過 8 個字元" }, 400);
+        }
+        if (note && note.trim().length > 20) {
+          return jsonResponse({ error: "備註文字不可超過 20 個字元" }, 400);
         }
 
         const newRecord = {
@@ -443,14 +584,21 @@ async function handler(req: Request): Promise<Response> {
         if (body.amount !== undefined) {
           const amt = Number(body.amount);
           if (isNaN(amt) || amt <= 0) return jsonResponse({ error: "金額需大於 0" }, 400);
+          if (amt > 99999999) return jsonResponse({ error: "金額上限為 8 位數 (最高 99,999,999)" }, 400);
           patch.amount = Math.round(amt);
         }
         if (body.date) {
           if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date)) return jsonResponse({ error: "日期格式錯誤" }, 400);
           patch.date = body.date;
         }
-        if (body.category) patch.category = body.category.trim();
-        if (body.note !== undefined) patch.note = body.note.trim();
+        if (body.category) {
+          if (body.category.trim().length > 8) return jsonResponse({ error: "分類標籤不可超過 8 個字元" }, 400);
+          patch.category = body.category.trim();
+        }
+        if (body.note !== undefined) {
+          if (body.note.trim().length > 20) return jsonResponse({ error: "備註文字不可超過 20 個字元" }, 400);
+          patch.note = body.note.trim();
+        }
         if (body.account !== undefined) patch.account = body.account.trim();
 
         const updated = await db.updateRecord(id, userId, patch);
