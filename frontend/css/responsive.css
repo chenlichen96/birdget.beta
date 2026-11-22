@@ -354,9 +354,30 @@
     width: 100%;
   }
 
-  /* 表格在手機端滾動 */
+  /* 表格在手機端滾動與排版優化 */
   .table-scroll-container {
-    max-height: 200px;
+    max-height: 245px; /* 原 200px 增加一欄高度 (~45px) */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 8px 6px;
+    font-size: 0.78rem;
+  }
+
+  .records-table .pill {
+    padding: 2px 5px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    display: inline-block;
+    line-height: 1.2;
+  }
+
+  .records-table .col-note {
+    min-width: 85px;
+    max-width: 140px;
   }
 
   /* 手機端顯示圖表放大按鈕 */

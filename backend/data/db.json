@@ -395,6 +395,102 @@
         "alertThreshold": 90
       },
       "createdAt": "2026-11-22T13:34:55.808Z"
+    },
+    {
+      "id": "49ab42a0-4bde-4240-b9fa-a283984a3cac",
+      "username": "reset_user_1795357012294",
+      "displayName": "重設密碼測試者",
+      "passwordHash": "147c65044c1338790cfd1c5fbd063f3d3140df27d842355c1dc79eedab222bae",
+      "salt": "eeacd40a9f6f441b98600edc1193533d",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:16:52.296Z"
+    },
+    {
+      "id": "84680283-7a2f-464b-b3cf-83f2d2260969",
+      "username": "real_db_1795357012330",
+      "displayName": "真實資料庫用戶",
+      "passwordHash": "85402c868afbfbe4f77b69842e2cd859f9ca3b903cff5ec86f3acad883a72b52",
+      "salt": "62161b7481ab4ec1b4d2d02ea8623ec6",
+      "budget": {
+        "monthlyLimit": 30000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:16:52.330Z"
+    },
+    {
+      "id": "0106ff98-2c25-439a-9788-af2ae37ab71d",
+      "username": "member_a_1795357012380",
+      "displayName": "小雅新名稱",
+      "passwordHash": "hashA",
+      "salt": "saltA",
+      "budget": {
+        "monthlyLimit": 15000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:16:52.380Z"
+    },
+    {
+      "id": "fea4c059-b41a-448a-97ae-d1b6cbd8d606",
+      "username": "member_b_1795357012383",
+      "displayName": "會員大衛",
+      "passwordHash": "hashB",
+      "salt": "saltB",
+      "budget": {
+        "monthlyLimit": 40000,
+        "alertThreshold": 90
+      },
+      "createdAt": "2026-11-22T14:16:52.383Z"
+    },
+    {
+      "id": "7dde480b-f923-4aae-9da4-c7be51020068",
+      "username": "reset_user_1795357185887",
+      "displayName": "重設密碼測試者",
+      "passwordHash": "8107a444259f4a9365b8dcf2934299d746e94df831fd4517d90c07cbe6553309",
+      "salt": "6ec816f92e3143eeb0a0cefb80a97dc9",
+      "budget": {
+        "monthlyLimit": 20000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:19:45.888Z"
+    },
+    {
+      "id": "54500dd0-a265-467f-ab2d-160fd1677e0f",
+      "username": "real_db_1795357185925",
+      "displayName": "真實資料庫用戶",
+      "passwordHash": "6225693a849022fdb12bda793ac6e064ed7fc8d56589aa84449b2dbca1556dd4",
+      "salt": "a0d684d4b4674c9985751c35e22efde0",
+      "budget": {
+        "monthlyLimit": 30000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:19:45.926Z"
+    },
+    {
+      "id": "59c68218-2bb9-48b0-ad34-82982e137573",
+      "username": "member_a_1795357185967",
+      "displayName": "小雅新名稱",
+      "passwordHash": "hashA",
+      "salt": "saltA",
+      "budget": {
+        "monthlyLimit": 15000,
+        "alertThreshold": 80
+      },
+      "createdAt": "2026-11-22T14:19:45.967Z"
+    },
+    {
+      "id": "fce837dc-49cb-46b3-a163-ecc179dccee6",
+      "username": "member_b_1795357185972",
+      "displayName": "會員大衛",
+      "passwordHash": "hashB",
+      "salt": "saltB",
+      "budget": {
+        "monthlyLimit": 40000,
+        "alertThreshold": 90
+      },
+      "createdAt": "2026-11-22T14:19:45.972Z"
     }
   ],
   "records": [
@@ -1357,6 +1453,150 @@
       "account": "信用卡",
       "createdAt": "2026-11-22T13:34:55.817Z",
       "updatedAt": "2026-11-22T13:34:55.817Z"
+    },
+    {
+      "id": "440d56ac-bdb6-4b19-8f98-d6501cc7e439",
+      "userId": "84680283-7a2f-464b-b3cf-83f2d2260969",
+      "type": "expense",
+      "amount": 180,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "豚骨拉麵",
+      "account": "現金",
+      "createdAt": "2026-11-22T14:16:52.337Z",
+      "updatedAt": "2026-11-22T14:16:52.337Z"
+    },
+    {
+      "id": "810c6f0c-d88d-4974-8ad3-40add03ee3ca",
+      "userId": "84680283-7a2f-464b-b3cf-83f2d2260969",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-11-16",
+      "category": "日常交通",
+      "note": "捷運定期票",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-22T14:16:52.341Z",
+      "updatedAt": "2026-11-22T14:16:52.341Z"
+    },
+    {
+      "id": "d1e29970-bfb1-4cee-88a8-89a285f4c882",
+      "userId": "84680283-7a2f-464b-b3cf-83f2d2260969",
+      "type": "income",
+      "amount": 50000,
+      "date": "2026-11-01",
+      "category": "薪水收入",
+      "note": "本月薪資",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-22T14:16:52.346Z",
+      "updatedAt": "2026-11-22T14:16:52.346Z"
+    },
+    {
+      "id": "271d73d4-1476-4ef6-a3a2-01beab271a3e",
+      "userId": "0106ff98-2c25-439a-9788-af2ae37ab71d",
+      "type": "expense",
+      "amount": 990,
+      "date": "2026-11-15",
+      "category": "購物消費",
+      "note": "小雅的私人物品",
+      "account": "信用卡",
+      "createdAt": "2026-11-22T14:16:52.387Z",
+      "updatedAt": "2026-11-22T14:16:52.388Z"
+    },
+    {
+      "id": "46149b5e-76bb-4987-b95d-63ead2d1aaa4",
+      "userId": "0106ff98-2c25-439a-9788-af2ae37ab71d",
+      "type": "income",
+      "amount": 32000,
+      "date": "2026-11-10",
+      "category": "薪水收入",
+      "note": "小雅的薪水",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-22T14:16:52.392Z",
+      "updatedAt": "2026-11-22T14:16:52.392Z"
+    },
+    {
+      "id": "f52df29a-06fa-48b5-b9bb-b2c874b87587",
+      "userId": "fea4c059-b41a-448a-97ae-d1b6cbd8d606",
+      "type": "expense",
+      "amount": 5500,
+      "date": "2026-11-16",
+      "category": "休閒娛樂",
+      "note": "大衛的露營裝備",
+      "account": "信用卡",
+      "createdAt": "2026-11-22T14:16:52.397Z",
+      "updatedAt": "2026-11-22T14:16:52.397Z"
+    },
+    {
+      "id": "d2fd79f0-b871-4c44-8b2c-e8291a7e28d4",
+      "userId": "54500dd0-a265-467f-ab2d-160fd1677e0f",
+      "type": "expense",
+      "amount": 180,
+      "date": "2026-11-16",
+      "category": "餐飲飲食",
+      "note": "豚骨拉麵",
+      "account": "現金",
+      "createdAt": "2026-11-22T14:19:45.931Z",
+      "updatedAt": "2026-11-22T14:19:45.931Z"
+    },
+    {
+      "id": "18517502-1149-499e-b656-f90aaf441c05",
+      "userId": "54500dd0-a265-467f-ab2d-160fd1677e0f",
+      "type": "expense",
+      "amount": 1280,
+      "date": "2026-11-16",
+      "category": "日常交通",
+      "note": "捷運定期票",
+      "account": "悠遊卡",
+      "createdAt": "2026-11-22T14:19:45.935Z",
+      "updatedAt": "2026-11-22T14:19:45.935Z"
+    },
+    {
+      "id": "dc446635-e70f-4040-af10-dfc0aeb76fb1",
+      "userId": "54500dd0-a265-467f-ab2d-160fd1677e0f",
+      "type": "income",
+      "amount": 50000,
+      "date": "2026-11-01",
+      "category": "薪水收入",
+      "note": "本月薪資",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-22T14:19:45.940Z",
+      "updatedAt": "2026-11-22T14:19:45.940Z"
+    },
+    {
+      "id": "afdca7f2-a896-4a6b-bfa8-35ebdcd3775b",
+      "userId": "59c68218-2bb9-48b0-ad34-82982e137573",
+      "type": "expense",
+      "amount": 990,
+      "date": "2026-11-15",
+      "category": "購物消費",
+      "note": "小雅的私人物品",
+      "account": "信用卡",
+      "createdAt": "2026-11-22T14:19:45.976Z",
+      "updatedAt": "2026-11-22T14:19:45.976Z"
+    },
+    {
+      "id": "576d9a54-289a-439c-873d-bfccf8445ab9",
+      "userId": "59c68218-2bb9-48b0-ad34-82982e137573",
+      "type": "income",
+      "amount": 32000,
+      "date": "2026-11-10",
+      "category": "薪水收入",
+      "note": "小雅的薪水",
+      "account": "銀行轉帳",
+      "createdAt": "2026-11-22T14:19:45.978Z",
+      "updatedAt": "2026-11-22T14:19:45.978Z"
+    },
+    {
+      "id": "29997c3f-f14c-4895-b83e-ba6d79b851da",
+      "userId": "fce837dc-49cb-46b3-a163-ecc179dccee6",
+      "type": "expense",
+      "amount": 5500,
+      "date": "2026-11-16",
+      "category": "休閒娛樂",
+      "note": "大衛的露營裝備",
+      "account": "信用卡",
+      "createdAt": "2026-11-22T14:19:45.981Z",
+      "updatedAt": "2026-11-22T14:19:45.981Z"
     }
   ],
   "sessions": [
@@ -1437,6 +1677,18 @@
       "userId": "f38cde20-305a-4e7f-be5e-146107459eb8",
       "createdAt": "2026-11-22T13:34:55.797Z",
       "expiresAt": "2026-12-22T13:34:55.797Z"
+    },
+    {
+      "token": "token_relogin_1795357012376",
+      "userId": "84680283-7a2f-464b-b3cf-83f2d2260969",
+      "createdAt": "2026-11-22T14:16:52.376Z",
+      "expiresAt": "2026-12-22T14:16:52.376Z"
+    },
+    {
+      "token": "token_relogin_1795357185962",
+      "userId": "54500dd0-a265-467f-ab2d-160fd1677e0f",
+      "createdAt": "2026-11-22T14:19:45.962Z",
+      "expiresAt": "2026-12-22T14:19:45.962Z"
     }
   ]
 }

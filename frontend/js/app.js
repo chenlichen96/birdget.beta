@@ -945,15 +945,15 @@ function renderStatsTable(records) {
     const sign = isIncome ? "+" : "-";
 
     tr.innerHTML = `
-      <td>${r.date}</td>
-      <td><span class="pill ${typeClass}">${typeLabel}</span></td>
+      <td style="white-space: nowrap;">${r.date}</td>
+      <td class="col-type text-center"><span class="pill ${typeClass}">${typeLabel}</span></td>
       <td><strong>${escapeHtml(r.category)}</strong></td>
-      <td>${escapeHtml(r.note || "-")}</td>
+      <td class="col-note">${escapeHtml(r.note || "-")}</td>
       <td>${escapeHtml(r.account || "現金")}</td>
-      <td class="text-right" style="font-weight: 700; color: var(${isIncome ? "--color-income" : "--color-expense"});">
-        ${sign}NT$ ${r.amount.toLocaleString()}
+      <td class="text-right" style="font-weight: 700; color: var(${isIncome ? "--color-income" : "--color-expense"}); white-space: nowrap;">
+        ${sign}${r.amount.toLocaleString()}
       </td>
-      <td class="text-center">
+      <td class="text-center" style="white-space: nowrap;">
         <button class="btn-icon-action edit-btn" title="編輯" aria-label="編輯">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
